@@ -6,6 +6,7 @@
 #include "Sphere.h"
 #include "Renderer.h"
 #include "Scene.h"
+#include "DirectionalLight.h"
 
 #include <fstream>
 
@@ -17,25 +18,33 @@ int main(void) {
     std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE);
     std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW);
     std::shared_ptr<Material> rojo = std::make_shared<Material>(RED);
+    std::shared_ptr<Material> verde = std::make_shared<Material>(GREEN);
 
-    std::shared_ptr<Sphere> obj3 = std::make_shared<Sphere>(glm::vec3(-1, 0, -1), 0.5, azul);
-    std::shared_ptr<Sphere> obj2 = std::make_shared<Sphere>(glm::vec3(0, 0, -2), 1.0, amarillo);
-    std::shared_ptr<Sphere> obj1 = std::make_shared<Sphere>(glm::vec3(1, 0, -1), 0.5, rojo);
+    std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2, 0, -2), 1.0, rojo);
+    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0, 0, -2), 1.0, amarillo);
+    std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(2, 0, -2), 1.0, azul);
+    std::shared_ptr<Sphere> s4 = std::make_shared<Sphere>(glm::vec3(0, -100, -2), 99.0, verde);
 
     std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-    scene->addShape(obj1);
-    scene->addShape(obj2);
-    scene->addShape(obj3);
+    scene->addShape(s1);
+    scene->addShape(s2);
+    scene->addShape(s3);
+    scene->addShape(s4);
+
+    std::shared_ptr<World> world = std::make_shared<World>(scene);
+
+    std::shared_ptr<Light> directionalLight = std::make_shared<DirectionalLight>(glm::vec3{0,-1,0}, WHITE);
+    world->addLight(directionalLight);
 
     const Camera cam{
-        {0.0, 0.0, 0.0},
-        obj2->get_center(),
+        {0.0, 0.0, 3.0},
+        {0.0, 0.0, .0},
         {0.0, 1.0, 0.0},
         film,
-        90.0
+        60.0
     };
 
-    Renderer renderer(film, cam, scene);
+    Renderer renderer(film, cam, world);
     renderer.render();
 
     return 0;
