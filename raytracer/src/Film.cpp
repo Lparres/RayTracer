@@ -1,4 +1,5 @@
 #include "Film.h"
+#include "glm/geometric.hpp"
 
 void Film::AddPixel(Color color) {
     if (missingHeader) {
@@ -6,9 +7,9 @@ void Film::AddPixel(Color color) {
         missingHeader = false;
     }
 
-    int ir = (int)(255.99 * color.x);
-    int ig = (int)(255.99 * color.y);
-    int ib = (int)(255.99 * color.z);
+    int ir = static_cast<int>(255.999f * glm::clamp(color.r, 0.0f, 1.0f));
+    int ig = static_cast<int>(255.999f * glm::clamp(color.g, 0.0f, 1.0f));
+    int ib = static_cast<int>(255.999f * glm::clamp(color.b, 0.0f, 1.0f));
 
     _out << ir << ' ' << ig << ' ' << ib << '\n';
 }

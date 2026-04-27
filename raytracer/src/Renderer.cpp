@@ -3,7 +3,7 @@
 
 Color Renderer::ray_color(const Ray& r) {
     HitInfo hitInfo;
-    if (world->getScene()->intersect(r, 0.0, 10.0, hitInfo)) {
+    if (world->getScene()->intersect(r, 0.001f, 1000.0f, hitInfo)) {
         return shade(r, hitInfo);
     }
 
@@ -19,7 +19,7 @@ Color Renderer::ray_color(const Ray& r) {
 }
 
 Color Renderer::shade(Ray r, HitInfo hit) {
-    Color ret;
+    Color ret = Color();
     // Ambiente
     ret += Color(0.1, 0.1, 0.1);
 

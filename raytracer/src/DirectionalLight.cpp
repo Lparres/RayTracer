@@ -1,23 +1,28 @@
 #include "DirectionalLight.h"
 #include "glm/geometric.hpp"
 #include <cmath>
+#include <iostream>
 
 DirectionalLight::DirectionalLight(glm::vec3 dir, Color c) 
-: Light(glm::vec3(1,1,0), c) // posicion hardcodeada
+: Light(glm::vec3(0,0,0), c) // posicion hardcodeada
 , direction(glm::normalize(dir))
 {
 
 }
 
 Color DirectionalLight::shade(Ray r, HitInfo hit) {
+
+    glm::vec3 lightDir = glm::normalize(-direction);
+
     // diffuse lighting
-    float intensity = std::max(0.f, glm::dot(hit.normal, direction));
+    float intensity = std::max(0.f, glm::dot(hit.normal, lightDir));
     Color diffuse = color * intensity * hit.material->get_albedo();
 
     // specular
-    glm::vec3 halfVector = glm::normalize( direction + r.direction());
+    glm::vec3 viewDir = glm::normalize(-r.direction());
+    glm::vec3 halfVector = glm::normalize( lightDir + viewDir);
     float specularIntensity = std::max(0.f , glm::dot( hit.normal , halfVector ));
-    specularIntensity = pow( specularIntensity , 100 ); // 100 es intensidad del specular, mover al material
+    specularIntensity = pow( specularIntensity , 30 ); // 100 es intensidad del specular, mover al material
     Color specular = color * specularIntensity ;
 
     return diffuse + specular;
