@@ -1,17 +1,17 @@
-#include "DirectionalLight.h"
+#include "PointLight.h"
 #include "glm/geometric.hpp"
 #include <cmath>
 
-DirectionalLight::DirectionalLight(glm::vec3 dir, Color c) 
+PointLight::PointLight(glm::vec3 pos, Color c)
 : Light(c)
-, direction(glm::normalize(dir))
+, position(pos)
 {
 
 }
 
-Color DirectionalLight::shade(Ray r, HitInfo hit) {
+Color PointLight::shade(Ray r, HitInfo hit) {
 
-    glm::vec3 lightDir = glm::normalize(-direction);
+    glm::vec3 lightDir = glm::normalize(position - hit.p);
 
     // diffuse lighting
     float intensity = std::max(0.f, glm::dot(hit.normal, lightDir));

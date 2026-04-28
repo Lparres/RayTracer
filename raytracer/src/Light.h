@@ -11,8 +11,7 @@ public:
     virtual Color shade(Ray r, HitInfo hit) = 0;
 
 protected:
-    glm::vec3 position;
     Color color;
 
-    Light(glm::vec3 pos, Color c) : position(pos), color(c) {}
+    Light(Color c) : color(c) {}
 };

@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "DirectionalLight.h"
+#include "PointLight.h"
 
 #include <fstream>
 
@@ -33,8 +34,11 @@ int main(void) {
 
     std::shared_ptr<World> world = std::make_shared<World>(scene);
 
-    std::shared_ptr<Light> directionalLight = std::make_shared<DirectionalLight>(glm::vec3{0,-1,-1}, WHITE);
-    world->addLight(directionalLight);
+    // std::shared_ptr<Light> directionalLight = std::make_shared<DirectionalLight>(glm::vec3{0,-1,-1}, WHITE);
+    // world->addLight(directionalLight);
+
+    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2,2,0}, WHITE);
+    world->addLight(pointLight);
 
     const Camera cam{
         {0.0, 0.0, 3.0},
