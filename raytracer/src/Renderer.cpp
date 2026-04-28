@@ -24,8 +24,14 @@ Color Renderer::shade(Ray r, HitInfo hit) {
     ret += Color(0.1, 0.1, 0.1);
 
     // Luces
-    for(auto light : world->getLights()) 
+    for(auto light : world->getLights()) {
+        if(light->castsShadows()) {
+            Ray shadowRay = Ray(hit.p, light->getShadowDir(hit.p));
+            if (world->getScene()->intersect(shadowRay, 0.001f, hit.t)) 
+                continue;
+        }
         ret += light->shade(r, hit);
+    }
     
     return ret;
 }

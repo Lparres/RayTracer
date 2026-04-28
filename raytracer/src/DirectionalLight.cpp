@@ -3,7 +3,7 @@
 #include <cmath>
 
 DirectionalLight::DirectionalLight(glm::vec3 dir, Color c) 
-: Light(c)
+: Light(c, false)
 , direction(glm::normalize(dir))
 {
 
