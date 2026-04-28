@@ -18,7 +18,7 @@ public:
     virtual bool intersect(const Ray &ray, float tMin, float tMax) const override;
     virtual bool intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) const override;
 
-    glm::vec3 getCenter() const { return center; }
+    glm::vec3 getCeneer() const { return center; }
     float getRadius() const { return radius; }
     std::shared_ptr<Material> getMaterial() const { return material; }
 

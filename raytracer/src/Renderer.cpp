@@ -39,7 +39,7 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hitInfo, i
     color += Color(0.1, 0.1, 0.1) * hitInfo.material->getAlbedo();
 
     // Luz directa
-    for(const auto& light : world->getLights()) {
+    for(auto light : world->getLights()) {
         if(light->castsShadows()) {
             const Light::ShadowRay shadowRay = light->getShadowRay(hitInfo.p);
             if (world->getScene()->intersect(shadowRay.ray, 0.001f, shadowRay.maxDistance)) {

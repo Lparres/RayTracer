@@ -5,11 +5,11 @@ World::World(std::shared_ptr<Scene> scene)
 
 }
 
-const std::shared_ptr<Scene>& World::getScene() const {
+std::shared_ptr<Scene> World::getScene() {
     return scene;
 }
 
-const std::vector<std::shared_ptr<Light>>& World::getLights() const {
+std::vector<std::shared_ptr<Light>> World::getLights() {
     return lights;
 }
 

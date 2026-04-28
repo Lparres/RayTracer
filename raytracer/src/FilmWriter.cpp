@@ -35,8 +35,5 @@ void FilmWriter::writePPM(const Film& film, std::ostream& out, bool applyGamma) 
  
 void FilmWriter::writePPM(const Film& film, const std::string& path, bool applyGamma) {
     std::ofstream file(path);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open output file: " + path);
-    }
     writePPM(film, file, applyGamma);
 }

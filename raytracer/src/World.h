@@ -11,8 +11,8 @@ public:
     World(std::shared_ptr<Scene> scene);
     ~World() = default;
 
-    const std::shared_ptr<Scene>& getScene() const;
-    const std::vector<std::shared_ptr<Light>>& getLights() const;
+    std::shared_ptr<Scene> getScene();
+    std::vector<std::shared_ptr<Light>> getLights();
     
     void addLight(std::shared_ptr<Light> l);
     
