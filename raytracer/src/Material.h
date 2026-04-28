@@ -6,12 +6,17 @@
 // Usada por las luces calcular la respuesta de iluminación
 class Material {
 public:
-    Material(const Color& albedo, float specular = 30.f, float reflectance = 0.f) : albedo(albedo), specular(specular), reflectance(reflectance) {}
+    Material(const Color& albedo, float specular = 30.f, float reflectance = 0.f) :
+        albedo(albedo),
+        specular(specular),
+        reflectance(reflectance)
+    {}
+
     virtual ~Material() = default;
 
-    Color get_albedo() const { return albedo; }
-    float get_specular() const { return specular; }
-    float get_reflectance() const { return reflectance; }
+    Color getAlbedo() const { return albedo; }
+    float getSpecular() const { return specular; }
+    float getReflectance() const { return reflectance; }
 
 private:
     Color albedo;

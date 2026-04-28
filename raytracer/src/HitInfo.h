@@ -13,7 +13,7 @@ public:
     double t;
     std::shared_ptr<Material> material;
 
-    // uv
+    // Coordenadas locales del plano (u, v) para texturizado
     float u;
     float v;
 };

@@ -1,5 +1,4 @@
-#ifndef RAY_H
-#define RAY_H
+#pragma once
 
 #include "glm/vec3.hpp"
 
@@ -20,5 +19,3 @@ class Ray {
     glm::vec3 orig;
     glm::vec3 dir;
 };
-
-#endif

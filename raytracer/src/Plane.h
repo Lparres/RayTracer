@@ -6,30 +6,37 @@
 #include "Material.h"
 
 // Implementación concreta de un plano que hereda de Shape
-// Define la esquina (corner), dos lados (u, v) y el material del plano
+// Define la esquina (Q), dos lados (u, v) y el material del plano
 // Implementa la intersección del rayo con el plano y las coordenadas locales (u,v)
 class Plane : public Shape {
 public:
-    Plane(const glm::vec3 &corner,  glm::vec3 u,  glm::vec3 v, std::shared_ptr<Material> material);
+    Plane(const glm::vec3 &Q,  glm::vec3 u,  glm::vec3 v, std::shared_ptr<Material> material);
 
     virtual ~Plane() = default;
 
     virtual bool intersect(const Ray &ray, float tMin, float tMax) const override;
     virtual bool intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) const override;
 
-    glm::vec3 get_corner() const { return corner; }
-    glm::vec3 get_side1() const { return u; }
-    glm::vec3 get_side2() const { return v; }
-    std::shared_ptr<Material> get_material() const { return material; }
+    glm::vec3 getQ() const { return Q; }
+    glm::vec3 getU() const { return u; }
+    glm::vec3 getV() const { return v; }
+    std::shared_ptr<Material> getMaterial() const { return material; }
 
 private:
+    // Función auxiliar para determinar si las coordenadas locales
+    // están dentro del área del plano
     bool isInterior(float a, float b) const;
 
-    glm::vec3 corner;
+    // Parámetros del plano
+    glm::vec3 Q;
     glm::vec3 u;
     glm::vec3 v;
+
+    // Parámetros precomputados para la intersección
     glm::vec3 w;
     glm::vec3 normal;
     float D;
+
+    // Material del plano
     std::shared_ptr<Material> material;
 };

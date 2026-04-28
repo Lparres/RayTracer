@@ -15,7 +15,7 @@ Camera::Camera(
     const glm::vec3 forward_displacement = position - look;
     const float focal_length = glm::length(forward_displacement);
     const glm::vec3 forward = forward_displacement / focal_length;
-    const glm::vec3 right = glm::cross(up, forward);    
+    const glm::vec3 right = glm::cross(up, forward);
     const glm::vec3 v = glm::cross(forward, right);
 
     const float half_height_viewport = focal_length * half_height_normalized;
@@ -35,7 +35,7 @@ Camera::Camera(
         - right * half_width_viewport + delta_y * 0.5f;
 }
 
-Ray Camera::get_ray(int x, int y) const {
+Ray Camera::getRay(int x, int y) const {
     const glm::vec3 sample =
         position_top_left + delta_x * (float)x + delta_y * (float)y;
     const glm::vec3 displacement = (sample - position);

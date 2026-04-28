@@ -13,18 +13,20 @@ public:
 
     virtual Color shade(Ray r, HitInfo hit) = 0;
 
-    bool castsShadows() { return castShadows; }
+    bool castsShadows() const { return castShadows; }
 
-    virtual glm::vec3 getShadowDir(glm::vec3 pos) { return glm::vec3();}
+    virtual glm::vec3 getShadowDir(glm::vec3 pos) const { return glm::vec3();}
 
-    glm::vec3 getPosOrDir() { return posOrDir; }
+    glm::vec3 getPosOrDir() const { return posOrDir; }
 
 protected:
+    Light(Color c, glm::vec3 posOrDir, bool castShadows) :
+        color(c),
+        posOrDir(posOrDir),
+        castShadows(castShadows)
+    {}
+
     Color color;
-
     glm::vec3 posOrDir;
-
     bool castShadows;
-
-    Light(Color c, glm::vec3 posOrDir, bool castShadows) : color(c), posOrDir(posOrDir), castShadows(castShadows) {}
 };

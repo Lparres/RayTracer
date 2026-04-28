@@ -1,11 +1,9 @@
 #include "PointLight.h"
 #include <cmath>
 
-PointLight::PointLight(glm::vec3 pos, Color c)
-: Light(c, pos, true)
-{
-
-}
+PointLight::PointLight(glm::vec3 pos, Color c) :
+    Light(c, pos, true)
+{}
 
 // Implementa un modelo de iluminación Blinn-Phong
 Color PointLight::shade(Ray r, HitInfo hit) {
@@ -14,13 +12,13 @@ Color PointLight::shade(Ray r, HitInfo hit) {
 
     // diffuse lighting
     float intensity = std::max(0.f, glm::dot(hit.normal, lightDir));
-    Color diffuse = color * intensity * hit.material->get_albedo();
+    Color diffuse = color * intensity * hit.material->getAlbedo();
 
     // specular
     glm::vec3 viewDir = glm::normalize(-r.direction());
     glm::vec3 halfVector = glm::normalize( lightDir + viewDir);
     float specularIntensity = std::max(0.f , glm::dot( hit.normal , halfVector ));
-    specularIntensity = pow( specularIntensity , hit.material->get_specular() ); // 30 es intensidad del specular, mover al material
+    specularIntensity = pow( specularIntensity , hit.material->getSpecular() );
     Color specular = color * specularIntensity ;
 
     return diffuse + specular;

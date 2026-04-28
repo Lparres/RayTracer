@@ -17,17 +17,18 @@ bool Sphere::intersect(const Ray &ray, float tMin, float tMax) const {
         if (root < tMax && root > tMin) {
             return true;
         }
+        
     }
     return false;
 }
 
 bool Sphere::intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) const {
-    
+
     //version simplificada
-    
+
     glm::vec3 oc = center - ray.origin();
     float a = glm::dot(ray.direction(), ray.direction());
-    float h = glm::dot(ray.direction(), oc); 
+    float h = glm::dot(ray.direction(), oc);
     float c = glm::dot(oc, oc) - radius * radius;
 
     float discriminant = h*h - a*c;

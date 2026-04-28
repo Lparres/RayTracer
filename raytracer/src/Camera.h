@@ -6,7 +6,7 @@
 
 // Camera es la responsable de la proyección
 // Precalcula todos los vectores necesarios para generar rayos
-// Expone el método get_ray(x, y) para devolver el rayo primario correspondiente a un píxel de la imagen.
+// Expone el método getRay(x, y) para devolver el rayo primario correspondiente a un píxel de la imagen.
 class Camera {
 
 public:
@@ -18,7 +18,7 @@ public:
         const float fov_degrees_vertical
     );
 
-    Ray get_ray(int x, int y) const;
+    Ray getRay(int x, int y) const;
 
 private:
     glm::vec3 position;

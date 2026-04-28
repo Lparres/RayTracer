@@ -20,7 +20,7 @@ int main(void)
     std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE);
     std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW);
     std::shared_ptr<Material> rojo = std::make_shared<Material>(RED);
-    std::shared_ptr<Material> verde = std::make_shared<Material>(GREEN);
+    std::shared_ptr<Material> verde = std::make_shared<Material>(GREEN, 30.0f, 0.5f);
 
     std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, rojo);
     std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -2.0f), 1.0f, amarillo);

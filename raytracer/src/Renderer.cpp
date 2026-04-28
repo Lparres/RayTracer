@@ -25,7 +25,7 @@ Color Renderer::ray_color(const Ray& r, int& bounceCount) {
 Color Renderer::shade(Ray r, HitInfo hit, int& bounceCount) {
     Color ret = Color();
     // Ambiente
-    ret += Color(0.1, 0.1, 0.1) * hit.material->get_albedo();
+    ret += Color(0.1, 0.1, 0.1) * hit.material->getAlbedo();
 
     // Luces
     for(auto light : world->getLights()) {
@@ -38,10 +38,10 @@ Color Renderer::shade(Ray r, HitInfo hit, int& bounceCount) {
         ret += light->shade(r, hit);
     }
 
-    if(hit.material->get_reflectance() > 0.f) {
+    if(hit.material->getReflectance() > 0.f) {
         glm::vec3 reflectDir = glm::reflect(r.direction(), hit.normal);
         Ray reflectRay(hit.p, reflectDir);
-        ret += hit.material->get_reflectance() * ray_color(reflectRay, bounceCount);
+        ret += hit.material->getReflectance() * ray_color(reflectRay, bounceCount);
     }
 
     return ret;
@@ -54,9 +54,9 @@ void Renderer::render() {
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             int bounceCount = 0;
-            const Ray ray_primary = camera.get_ray(x, y);   // Generar rayo primario desde la cámara
-            const Color c = ray_color(ray_primary, bounceCount);         // Intersectar con la escena y calcular el color
-            film.setPixel(x, y, c);                         // Escribir el color en el film
+            const Ray ray_primary = camera.getRay(x, y);                // Generar rayo primario desde la cámara
+            const Color c = ray_color(ray_primary, bounceCount);        // Intersectar con la escena y calcular el color
+            film.setPixel(x, y, c);                                     // Escribir el color en el film
         }
     }
 }
