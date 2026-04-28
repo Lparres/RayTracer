@@ -10,6 +10,5 @@ public:
     ~PointLight() = default;
 
     Color computeLighting(const Ray& incoming, const HitInfo& hit) const override;
-
-    glm::vec3 getShadowDir(const glm::vec3& pos) const override;
+    ShadowRay getShadowRay(const glm::vec3& hitPoint) const override;
 };
