@@ -10,7 +10,7 @@ class HitInfo {
 public:
     glm::vec3 p;
     glm::vec3 normal;
-    double t;
+    float t;
     std::shared_ptr<Material> material;
 
     // Coordenadas locales del plano (u, v) para texturizado

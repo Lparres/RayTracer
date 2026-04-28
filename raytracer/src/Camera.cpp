@@ -9,7 +9,7 @@ Camera::Camera(
     const Film &film,
     const float fov_degrees_vertical
 ) : position(position) {
-    const float fov_radians_vertical = glm::radians(fov_degrees_vertical * 0.5);
+    const float fov_radians_vertical = glm::radians(fov_degrees_vertical * 0.5f);
     const float half_height_normalized = std::tan(fov_radians_vertical);
 
     const glm::vec3 forward_displacement = position - look;
@@ -21,8 +21,8 @@ Camera::Camera(
     const float half_height_viewport = focal_length * half_height_normalized;
     const float half_width_viewport = half_height_viewport * film.getAspectRatio();
 
-    const float height_viewport = half_height_viewport * 2.0;
-    const float width_viewport = half_width_viewport * 2.0;
+    const float height_viewport = half_height_viewport * 2.0f;
+    const float width_viewport = half_width_viewport * 2.0f;
 
     const float pixel_height = height_viewport / float(film.getHeight());
     const float pixel_width = width_viewport / float(film.getWidth());

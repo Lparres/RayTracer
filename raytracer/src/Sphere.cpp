@@ -4,20 +4,20 @@
 bool Sphere::intersect(const Ray &ray, float tMin, float tMax) const {
     glm::vec3 oc = center - ray.origin();
     auto a = glm::dot(ray.direction(), ray.direction());
-    auto b = -2.0 * glm::dot(ray.direction(), oc);
+    auto b = -2.0f * glm::dot(ray.direction(), oc);
     auto c = glm::dot(oc, oc) - radius*radius;
     auto discriminant = b*b - 4*a*c;
     if (discriminant < 0) {
         return false;
     } else {
-        float root = (-b - sqrt(discriminant)) / (2.0*a);
+        float root = (-b - std::sqrt(discriminant)) / (2.0f*a);
         if (root < tMax && root > tMin)
             return true;
-        root = (-b + sqrt(discriminant)) / (2.0*a);
+        root = (-b + std::sqrt(discriminant)) / (2.0f*a);
         if (root < tMax && root > tMin) {
             return true;
         }
-        
+
     }
     return false;
 }

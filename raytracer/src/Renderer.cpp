@@ -1,18 +1,17 @@
 #include "Renderer.h"
 #include "glm/geometric.hpp"
 
-Color Renderer::ray_color(const Ray& r, int& bounceCount) {
-    if(bounceCount > MAX_BOUNCES) {
+Color Renderer::traceRay(const Ray& r, int depth) {
+    if(depth >= maxDepth) {
         return Color(0, 0, 0);
     }
 
     HitInfo hitInfo;
     if (world->getScene()->intersect(r, 0.001f, 1000.0f, hitInfo)) {
-        return shade(r, hitInfo, ++bounceCount);
+        return computeShading(r, hitInfo, depth);
     }
 
-    // Background color
-    return BACKGROUND_COLOR;
+    return backgroundColor;
 
     // Skybox
     /*
@@ -22,12 +21,14 @@ Color Renderer::ray_color(const Ray& r, int& bounceCount) {
     */
 }
 
-Color Renderer::shade(Ray r, HitInfo hit, int& bounceCount) {
-    Color ret = Color();
-    // Ambiente
-    ret += Color(0.1, 0.1, 0.1) * hit.material->getAlbedo();
+Color Renderer::computeShading(const Ray& r, HitInfo hit, int depth)
+{
+    Color color = Color();
 
-    // Luces
+    // Luz ambiental
+    color += Color(0.1, 0.1, 0.1) * hit.material->getAlbedo();
+
+    // Luz directa
     for(auto light : world->getLights()) {
         if(light->castsShadows()) {
             Ray shadowRay = Ray(hit.p, light->getShadowDir(hit.p));
@@ -35,16 +36,17 @@ Color Renderer::shade(Ray r, HitInfo hit, int& bounceCount) {
                 continue;
             }
         }
-        ret += light->shade(r, hit);
+        color += light->shade(r, hit);
     }
 
-    if(hit.material->getReflectance() > 0.f) {
+    // Reflexiones
+    if(hit.material->getReflectance() > 0.0f) {
         glm::vec3 reflectDir = glm::reflect(r.direction(), hit.normal);
         Ray reflectRay(hit.p, reflectDir);
-        ret += hit.material->getReflectance() * ray_color(reflectRay, bounceCount);
+        color += hit.material->getReflectance() * traceRay(reflectRay, depth + 1);
     }
 
-    return ret;
+    return color;
 }
 
 void Renderer::render() {
@@ -53,10 +55,10 @@ void Renderer::render() {
 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
-            int bounceCount = 0;
-            const Ray ray_primary = camera.getRay(x, y);                // Generar rayo primario desde la cámara
-            const Color c = ray_color(ray_primary, bounceCount);        // Intersectar con la escena y calcular el color
-            film.setPixel(x, y, c);                                     // Escribir el color en el film
+            int depth = 0;
+            const Ray ray_primary = camera.getRay(x, y);        // Generar rayo primario desde la cámara
+            const Color c = traceRay(ray_primary, depth);       // Intersectar con la escena y calcular el color
+            film.setPixel(x, y, c);                             // Escribir el color en el film
         }
     }
 }
