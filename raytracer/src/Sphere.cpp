@@ -3,23 +3,23 @@
 
 bool Sphere::intersect(const Ray &ray, float tMin, float tMax) const {
     glm::vec3 oc = center - ray.origin();
-    auto a = glm::dot(ray.direction(), ray.direction());
-    auto b = -2.0f * glm::dot(ray.direction(), oc);
-    auto c = glm::dot(oc, oc) - radius*radius;
-    auto discriminant = b*b - 4*a*c;
-    if (discriminant < 0) {
-        return false;
-    } else {
-        float root = (-b - std::sqrt(discriminant)) / (2.0f*a);
-        if (root < tMax && root > tMin)
-            return true;
-        root = (-b + std::sqrt(discriminant)) / (2.0f*a);
-        if (root < tMax && root > tMin) {
-            return true;
-        }
+    float a = glm::dot(ray.direction(), ray.direction());
+    float h = glm::dot(ray.direction(), oc);
+    float c = glm::dot(oc, oc) - radius * radius;
 
+    float discriminant = h*h - a*c;
+    if (discriminant < 0.0f)
+        return false;
+
+    float sqrtd = std::sqrt(discriminant);
+
+    float root = (h - sqrtd) / a;
+    if (root <= tMin || root >= tMax) {
+        root = (h + sqrtd) / a;
+        if (root <= tMin || root >= tMax)
+            return false;
     }
-    return false;
+    return true;
 }
 
 bool Sphere::intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) const {

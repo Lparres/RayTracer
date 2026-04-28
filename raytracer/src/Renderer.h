@@ -11,7 +11,7 @@
 //      - Calcular el color de cada píxel usando las luces y materiales
 
 class Renderer {
-    const int maxDepth = 10;
+    static constexpr int maxDepth = 10;
     const Color backgroundColor = BLACK;
 
 public:

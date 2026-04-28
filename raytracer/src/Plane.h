@@ -27,6 +27,10 @@ private:
     // están dentro del área del plano
     bool isInterior(float a, float b) const;
 
+    // Función auxiliar que calcula la intersección común a ambos overloads.
+    // Rellena t, alpha y beta si hay intersección válida; devuelve false en caso contrario.
+    bool tryIntersect(const Ray& ray, float tMin, float tMax, float& t, float& alpha, float& beta) const;
+
     // Parámetros del plano
     glm::vec3 Q;
     glm::vec3 u;
