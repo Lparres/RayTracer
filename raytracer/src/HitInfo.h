@@ -12,4 +12,8 @@ public:
     glm::vec3 normal;
     double t;
     std::shared_ptr<Material> material;
+
+    // uv
+    float u;
+    float v;
 };

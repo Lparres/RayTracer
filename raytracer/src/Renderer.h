@@ -11,6 +11,9 @@
 //      - Calcular el color de cada píxel usando las luces y materiales
 
 class Renderer {
+    const int MAX_BOUNCES = 10;
+    const Color BACKGROUND_COLOR = BLACK;
+
 public:
 
     Renderer(Film& film, const Camera& camera, std::shared_ptr<World> world) : film(film), camera(camera), world(world) {}
@@ -19,8 +22,8 @@ public:
     void render();
 
 private:
-    Color ray_color(const Ray& r);
-    Color shade(Ray r, HitInfo hit);
+    Color ray_color(const Ray& r, int& bounceCount);
+    Color shade(Ray r, HitInfo hit, int& bounceCount);
 
 private:
     Film& film;

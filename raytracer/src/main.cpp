@@ -5,6 +5,7 @@
 #include "Color.h"
 #include "Camera.h"
 #include "Sphere.h"
+#include "Plane.h"
 #include "Renderer.h"
 #include "Scene.h"
 #include "DirectionalLight.h"
@@ -24,20 +25,18 @@ int main(void)
     std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2, 0, -2), 1.0, rojo);
     std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0, 0, -2), 1.0, amarillo);
     std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(2, 0, -2), 1.0, azul);
-    std::shared_ptr<Sphere> s4 = std::make_shared<Sphere>(glm::vec3(0, -100, -2), 99.0, verde);
+    // std::shared_ptr<Sphere> s4 = std::make_shared<Sphere>(glm::vec3(0, -100, -2), 99.0, verde);
+    std::shared_ptr<Plane> s4 = std::make_shared<Plane>(glm::vec3(3, 0, 5), glm::vec3(-6, 0, 0), glm::vec3(0, 0, 6), verde);
 
     std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-    scene->addShape(s1);
-    scene->addShape(s2);
-    scene->addShape(s3);
+    // scene->addShape(s1);
+    // scene->addShape(s2);
+    // scene->addShape(s3);
     scene->addShape(s4);
 
     std::shared_ptr<World> world = std::make_shared<World>(scene);
 
-    std::shared_ptr<Light> directionalLight = std::make_shared<DirectionalLight>(glm::vec3{-1,-1,0}, WHITE);
-    world->addLight(directionalLight);
-
-    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{-2,2,3}, WHITE);
+    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2,2,2}, WHITE);
     world->addLight(pointLight);
 
     const Camera cam{

@@ -17,10 +17,14 @@ public:
 
     virtual glm::vec3 getShadowDir(glm::vec3 pos) { return glm::vec3();}
 
+    glm::vec3 getPosOrDir() { return posOrDir; }
+
 protected:
     Color color;
-
+    
+    glm::vec3 posOrDir;
+    
     bool castShadows;
 
-    Light(Color c, bool castShadows) : color(c), castShadows(castShadows) {}
+    Light(Color c, glm::vec3 posOrDir, bool castShadows) : color(c), posOrDir(posOrDir), castShadows(castShadows) {}
 };

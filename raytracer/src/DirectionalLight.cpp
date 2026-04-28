@@ -3,8 +3,7 @@
 #include <cmath>
 
 DirectionalLight::DirectionalLight(glm::vec3 dir, Color c) 
-: Light(c, false)
-, direction(glm::normalize(dir))
+: Light(c, glm::normalize(dir), false)
 {
 
 }
@@ -12,17 +11,15 @@ DirectionalLight::DirectionalLight(glm::vec3 dir, Color c)
 // Implementa un modelo de iluminación Blinn-Phong
 Color DirectionalLight::shade(Ray r, HitInfo hit) {
 
-    glm::vec3 lightDir = glm::normalize(-direction);
-
     // diffuse lighting
-    float intensity = std::max(0.f, glm::dot(hit.normal, lightDir));
+    float intensity = std::max(0.f, glm::dot(hit.normal, -posOrDir));
     Color diffuse = color * intensity * hit.material->get_albedo();
 
     // specular
     glm::vec3 viewDir = glm::normalize(-r.direction());
-    glm::vec3 halfVector = glm::normalize( lightDir + viewDir);
+    glm::vec3 halfVector = glm::normalize( -posOrDir + viewDir);
     float specularIntensity = std::max(0.f , glm::dot( hit.normal , halfVector ));
-    specularIntensity = pow( specularIntensity , 30 ); // 30 es intensidad del specular, mover al material
+    specularIntensity = pow( specularIntensity , hit.material->get_specular() ); // 30 es intensidad del specular, mover al material
     Color specular = color * specularIntensity ;
 
     return diffuse + specular;
