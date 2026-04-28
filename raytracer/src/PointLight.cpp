@@ -6,7 +6,7 @@ PointLight::PointLight(glm::vec3 pos, Color c) :
 {}
 
 // Implementa un modelo de iluminación Blinn-Phong
-Color PointLight::shade(Ray r, HitInfo hit) {
+Color PointLight::computeLighting(const Ray& incoming, const HitInfo& hit) const {
 
     glm::vec3 lightDir = glm::normalize(posOrDir - hit.p);
 
@@ -15,15 +15,15 @@ Color PointLight::shade(Ray r, HitInfo hit) {
     Color diffuse = color * intensity * hit.material->getAlbedo();
 
     // specular
-    glm::vec3 viewDir = glm::normalize(-r.direction());
-    glm::vec3 halfVector = glm::normalize( lightDir + viewDir);
-    float specularIntensity = std::max(0.f , glm::dot( hit.normal , halfVector ));
-    specularIntensity = pow( specularIntensity , hit.material->getSpecular() );
+    glm::vec3 viewDir = glm::normalize(-incoming.direction());
+    glm::vec3 halfVector = glm::normalize(lightDir + viewDir);
+    float specularIntensity = std::max(0.f , glm::dot(hit.normal , halfVector));
+    specularIntensity = std::pow(specularIntensity , hit.material->getSpecular());
     Color specular = color * specularIntensity ;
 
     return diffuse + specular;
 }
 
-glm::vec3 PointLight::getShadowDir(glm::vec3 pos) {
+glm::vec3 PointLight::getShadowDir(const glm::vec3& pos) const {
     return glm::normalize(posOrDir - pos);
 }

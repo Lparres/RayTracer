@@ -22,8 +22,8 @@ public:
     void render();
 
 private:
-    Color traceRay(const Ray& r, int depth);
-    Color computeShading(const Ray& r, HitInfo hit, int depth);
+    Color traceRay(const Ray& incomingRay, int currentDepth);
+    Color computeShading(const Ray& incomingRay, const HitInfo& hitInfo, int currentDepth);
 
 private:
     Film& film;

@@ -9,6 +9,5 @@ class DirectionalLight : public Light {
 public:
     DirectionalLight(glm::vec3 dir, Color c);
     ~DirectionalLight() = default;
-
-    Color shade(Ray r, HitInfo hit) override;
+    Color computeLighting(const Ray& incoming, const HitInfo& hit) const override;
 };
