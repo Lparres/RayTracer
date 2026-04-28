@@ -37,11 +37,11 @@ Color Renderer::shade(Ray r, HitInfo hit) {
 }
 
 void Renderer::render() {
-    for (std::size_t y = 0; y < film.GetTamY(); ++y) {
-        for (std::size_t x = 0; x < film.GetTamX(); ++x) {
+    for (std::size_t y = 0; y < film.getHeight(); ++y) {
+        for (std::size_t x = 0; x < film.getWidth(); ++x) {
             const Ray ray_primary = camera.get_ray(x, y);   // Generar rayo primario desde la cámara
             const Color c = ray_color(ray_primary);         // Intersectar con la escena y calcular el color
-            film.AddPixel(c);                               // Escribir el color en el film
+            film.setPixel(x, y, c);                         // Escribir el color en el film
         }
     }
 }

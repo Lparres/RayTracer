@@ -13,7 +13,7 @@
 class Renderer {
 public:
 
-    Renderer(const Film& film, const Camera& camera, std::shared_ptr<World> world) : film(film), camera(camera), world(world) {}
+    Renderer(Film& film, const Camera& camera, std::shared_ptr<World> world) : film(film), camera(camera), world(world) {}
     ~Renderer() = default;
 
     void render();
@@ -23,7 +23,7 @@ private:
     Color shade(Ray r, HitInfo hit);
 
 private:
-    Film film;
+    Film& film;
     Camera camera;
     std::shared_ptr<World> world;
 };

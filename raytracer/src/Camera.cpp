@@ -19,13 +19,13 @@ Camera::Camera(
     const glm::vec3 v = glm::cross(forward, right);
 
     const float half_height_viewport = focal_length * half_height_normalized;
-    const float half_width_viewport = half_height_viewport * film.GetAspectRatio();
+    const float half_width_viewport = half_height_viewport * film.getAspectRatio();
 
     const float height_viewport = half_height_viewport * 2.0;
     const float width_viewport = half_width_viewport * 2.0;
 
-    const float pixel_height = height_viewport / float(film.GetTamY());
-    const float pixel_width = width_viewport / float(film.GetTamX());
+    const float pixel_height = height_viewport / float(film.getHeight());
+    const float pixel_width = width_viewport / float(film.getWidth());
 
     delta_x = right * pixel_width;
     delta_y = -v * pixel_height;

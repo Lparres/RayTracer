@@ -5,6 +5,7 @@
 #include "glm/vec3.hpp"
 #include "Material.h"
 
+// HitInfo representa el resultado de una intersección entre un rayo y un objeto
 class HitInfo {
 public:
     glm::vec3 p;

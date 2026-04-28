@@ -1,35 +1,33 @@
-#ifndef _FILM_H
-#define _FILM_H
+#pragma once
+
 #include "Color.h"
-#include <iostream>
+#include <vector>
+#include <stdexcept>
 
 // Film es el lienzo de la imagen final.
-// Define las dimensiones y aspecto de la imagen
-// También encapsula el stream de salida
-// Expone el método AddPixel() para escribir en formato PPM pixel a pixel 
+// Define el tamaño de la imagen y almacena el color de cada píxel.
 class Film {
 public:
+    Film(int width, int height)
+        : _width(width)
+        , _height(height)
+        , _pixels(width * height, Color(0, 0, 0))
+    {}
 
-    Film(int x, int y, std::ostream &output) : _tamX(x), _tamY(y), _aspectRatio(1.0f*_tamX / _tamY), _out(output) {}
+    void setPixel(int x, int y, Color color) {
+        _pixels[y * _width + x] = color;
+    }
 
-    Film(int x, int y) : Film(x, y, std::cout) {}
+    Color getPixel(int x, int y) const {
+        return _pixels[y * _width + x];
+    }
 
-    void AddPixel(Color color);
-
-    int GetTamX() const { return _tamX; }
-    int GetTamY() const { return _tamY; }
-    float GetAspectRatio() const { return (float)_tamX / _tamY; }
-
+    int getWidth()  const { return _width; }
+    int getHeight() const { return _height; }
+    float getAspectRatio() const { return static_cast<float>(_width) / _height; }
+    
 private:
-
-    int _tamX;
-    int _tamY;
-
-    std::ostream &_out;
-
-    float _aspectRatio;
-
-    bool missingHeader = true;
+    int _width;
+    int _height;
+    std::vector<Color> _pixels;
 };
-
-#endif

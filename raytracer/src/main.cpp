@@ -1,6 +1,7 @@
 #include "glm/vec3.hpp"
 #include "glm/geometric.hpp"
 #include "Film.h"
+#include "FilmWriter.h"
 #include "Color.h"
 #include "Camera.h"
 #include "Sphere.h"
@@ -11,10 +12,9 @@
 
 #include <fstream>
 
-int main(void) {
-    std::ofstream out{"imagen.ppm"};
-    Film film{1920, 1080, out};
-    glm::vec3 unit_direction{};
+int main(void) 
+{
+    Film film{1920, 1080};
 
     std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE);
     std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW);
@@ -50,6 +50,9 @@ int main(void) {
 
     Renderer renderer(film, cam, world);
     renderer.render();
+
+    // Exportamos el resultado a un archivo PPM
+    FilmWriter::writePPM(film, "imagen.ppm");
 
     return 0;
 }
