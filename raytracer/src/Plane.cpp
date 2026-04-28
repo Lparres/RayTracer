@@ -1,6 +1,7 @@
 #include "Plane.h"
 #include "glm/geometric.hpp"
-#include <iostream>
+#include <cmath>
+#include <stdexcept>
 
 Plane::Plane(const glm::vec3 &Q,  glm::vec3 side1,  glm::vec3 side2, std::shared_ptr<Material> material) :
     Q(Q),
@@ -8,17 +9,22 @@ Plane::Plane(const glm::vec3 &Q,  glm::vec3 side1,  glm::vec3 side2, std::shared
     v(side2),
     material(material)
 {
-    normal = glm::normalize(glm::cross(u, v));
-    D = glm::dot(normal, Q);
     const glm::vec3 n = glm::cross(u, v);
-    w = n / glm::dot(n, n);
+    const float nSquaredLength = glm::dot(n, n);
+    if (nSquaredLength <= 0.0f) {
+        throw std::invalid_argument("Plane side vectors cannot be parallel");
+    }
+
+    normal = glm::normalize(n);
+    D = glm::dot(normal, Q);
+    w = n / nSquaredLength;
 }
 
 bool Plane::intersect(const Ray &ray, float tMin, float tMax) const
 {
     // Calcular el denominador para determinar si el rayo es paralelo al plano
     const float denom = glm::dot(normal, ray.direction());
-    if (std::fabs(denom) < 1e-8)
+    if (std::fabs(denom) < 1e-8f)
         return false;
 
     // Calcular el valor de t para la intersección con el plano
@@ -43,7 +49,7 @@ bool Plane::intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) 
 {
     // Calcular el denominador para determinar si el rayo es paralelo al plano
     const float denom = glm::dot(normal, ray.direction());
-    if (std::fabs(denom) < 1e-8)
+    if (std::fabs(denom) < 1e-8f)
         return false;
 
     // Calcular el valor de t para la intersección con el plano

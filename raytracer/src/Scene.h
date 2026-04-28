@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include "Shape.h"
 
 // Scene es un shape compuesto (patrón Composite)

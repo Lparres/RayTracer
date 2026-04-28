@@ -1,19 +1,18 @@
 #include "World.h"
 
 World::World(std::shared_ptr<Scene> scene)
-: scene(scene) {
+: scene(scene)
+{}
 
+const Scene& World::getScene() const {
+    return *scene;
 }
 
-std::shared_ptr<Scene> World::getScene() {
-    return scene;
-}
-
-std::vector<std::shared_ptr<Light>> World::getLights() {
+const std::vector<std::shared_ptr<Light>>& World::getLights() const {
     return lights;
 }
 
 
-void World::addLight(std::shared_ptr<Light> l) {
-    lights.push_back(l);
+void World::addLight(std::shared_ptr<Light> light) {
+    lights.push_back(light);
 }

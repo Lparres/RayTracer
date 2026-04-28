@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+
 #include "Scene.h"
 #include "Light.h"
 
@@ -8,14 +10,14 @@
 // El World es el contexto global de la escena, que contiene toda la información necesaria para render
 class World {
 public:
-    World(std::shared_ptr<Scene> scene);
+    explicit World(std::shared_ptr<Scene> scene);
     ~World() = default;
 
-    std::shared_ptr<Scene> getScene();
-    std::vector<std::shared_ptr<Light>> getLights();
-    
-    void addLight(std::shared_ptr<Light> l);
-    
+    const Scene& getScene() const;
+    const std::vector<std::shared_ptr<Light>>& getLights() const;
+
+    void addLight(std::shared_ptr<Light> light);
+
 private:
 
     std::shared_ptr<Scene> scene;

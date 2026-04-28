@@ -2,6 +2,8 @@
 #include "glm/geometric.hpp"
 #include "glm/trigonometric.hpp"
 
+#include <stdexcept>
+
 Camera::Camera(
     glm::vec3 position,
     glm::vec3 look,
@@ -9,14 +11,27 @@ Camera::Camera(
     const Film &film,
     const float fov_degrees_vertical
 ) : position(position) {
+    if (film.getWidth() <= 0 || film.getHeight() <= 0) {
+        throw std::invalid_argument("Film dimensions must be positive");
+    }
+
     const float fov_radians_vertical = glm::radians(fov_degrees_vertical * 0.5f);
     const float half_height_normalized = std::tan(fov_radians_vertical);
 
     const glm::vec3 forward_displacement = position - look;
     const float focal_length = glm::length(forward_displacement);
+    if (focal_length <= 0.0f) {
+        throw std::invalid_argument("Camera position and look point cannot coincide");
+    }
+
     const glm::vec3 forward = forward_displacement / focal_length;
-    const glm::vec3 right = glm::cross(up, forward);
-    const glm::vec3 v = glm::cross(forward, right);
+    glm::vec3 right = glm::cross(up, forward);
+    const float right_length = glm::length(right);
+    if (right_length <= 0.0f) {
+        throw std::invalid_argument("Camera up vector cannot be parallel to the view direction");
+    }
+    right /= right_length;
+    const glm::vec3 up_orthonormal = glm::normalize(glm::cross(forward, right));
 
     const float half_height_viewport = focal_length * half_height_normalized;
     const float half_width_viewport = half_height_viewport * film.getAspectRatio();
@@ -28,10 +43,10 @@ Camera::Camera(
     const float pixel_width = width_viewport / float(film.getWidth());
 
     delta_x = right * pixel_width;
-    delta_y = -v * pixel_height;
+    delta_y = -up_orthonormal * pixel_height;
     position_top_left =
         position - focal_length * forward
-        + v * half_height_viewport + delta_x * 0.5f
+        + up_orthonormal * half_height_viewport + delta_x * 0.5f
         - right * half_width_viewport + delta_y * 0.5f;
 }
 
