@@ -9,6 +9,7 @@ DirectionalLight::DirectionalLight(glm::vec3 dir, Color c)
 
 }
 
+// Implementa un modelo de iluminación Blinn-Phong
 Color DirectionalLight::shade(Ray r, HitInfo hit) {
 
     glm::vec3 lightDir = glm::normalize(-direction);

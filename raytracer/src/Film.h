@@ -3,6 +3,10 @@
 #include "Color.h"
 #include <iostream>
 
+// Film es el lienzo de la imagen final.
+// Define las dimensiones y aspecto de la imagen
+// También encapsula el stream de salida
+// Expone el método AddPixel() para escribir en formato PPM pixel a pixel 
 class Film {
 public:
 

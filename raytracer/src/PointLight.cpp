@@ -9,6 +9,7 @@ PointLight::PointLight(glm::vec3 pos, Color c)
 
 }
 
+// Implementa un modelo de iluminación Blinn-Phong
 Color PointLight::shade(Ray r, HitInfo hit) {
 
     glm::vec3 lightDir = glm::normalize(position - hit.p);

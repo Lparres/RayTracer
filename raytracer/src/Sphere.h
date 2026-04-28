@@ -5,7 +5,9 @@
 #include "Shape.h"
 #include "Material.h"
 
-
+// Implementación concreta de una esfera, que hereda de Shape
+// Define el centro, radio y material de la esfera
+// Implementa ecuación de la esfera para calcular intersecciones con rayos
 class Sphere : public Shape {
 public:
     Sphere(const glm::vec3 &center, float radius, std::shared_ptr<Material> material)

@@ -4,6 +4,9 @@
 #include "Film.h"
 #include "Ray.h"
 
+// Camera es la responsable de la proyección
+// Precalcula todos los vectores necesarios para generar rayos
+// Expone el método get_ray(x, y) para devolver el rayo primario correspondiente a un píxel de la imagen.
 class Camera {
 
 public:

@@ -4,6 +4,8 @@
 #include "Scene.h"
 #include "Light.h"
 
+// Agrupa la escena y las luces en un solo objeto para facilitar su manejo
+// El World es el contexto global de la escena, que contiene toda la información necesaria para render
 class World {
 public:
     World(std::shared_ptr<Scene> scene);

@@ -2,6 +2,8 @@
 
 #include "Color.h"
 
+// Material representa las propiedades de la superficie de un objeto
+// Usada por las luces calcular la respuesta de iluminación
 class Material {
 public:
     Material(const Color& albedo) : albedo(albedo) {}
