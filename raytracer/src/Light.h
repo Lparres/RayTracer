@@ -9,7 +9,7 @@
 // Define el método shade() que calcula la contribución de la luz en un punto de intersección
 class Light {
 public:
-    ~Light() = default;
+    virtual ~Light() = default;
 
     virtual Color shade(Ray r, HitInfo hit) = 0;
 
@@ -21,9 +21,9 @@ public:
 
 protected:
     Color color;
-    
+
     glm::vec3 posOrDir;
-    
+
     bool castShadows;
 
     Light(Color c, glm::vec3 posOrDir, bool castShadows) : color(c), posOrDir(posOrDir), castShadows(castShadows) {}

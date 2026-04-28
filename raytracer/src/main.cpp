@@ -22,11 +22,11 @@ int main(void)
     std::shared_ptr<Material> rojo = std::make_shared<Material>(RED);
     std::shared_ptr<Material> verde = std::make_shared<Material>(GREEN);
 
-    std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2, 0, -2), 1.0, rojo);
-    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0, 0, -2), 1.0, amarillo);
-    std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(2, 0, -2), 1.0, azul);
+    std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, rojo);
+    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -2.0f), 1.0f, amarillo);
+    std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(2.0f, 0.0f, -2.0f), 1.0f, azul);
     // std::shared_ptr<Sphere> s4 = std::make_shared<Sphere>(glm::vec3(0, -100, -2), 99.0, verde);
-    std::shared_ptr<Plane> s4 = std::make_shared<Plane>(glm::vec3(3, -1, 5), glm::vec3(-6, 0, 0), glm::vec3(0, 0, -6), verde);
+    std::shared_ptr<Plane> s4 = std::make_shared<Plane>(glm::vec3(3.0f, -1.0f, 5.0f), glm::vec3(-6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -6.0f), verde);
 
     std::shared_ptr<Scene> scene = std::make_shared<Scene>();
     scene->addShape(s1);
@@ -36,7 +36,7 @@ int main(void)
 
     std::shared_ptr<World> world = std::make_shared<World>(scene);
 
-    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2,2,2}, WHITE);
+    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2.0f, 2.0f, 2.0f}, WHITE);
     world->addLight(pointLight);
 
     const Camera cam{
@@ -44,7 +44,7 @@ int main(void)
         {0.0, 0.0, 0.0},
         {0.0, 1.0, 0.0},
         film,
-        60.0
+        60.0f
     };
 
     Renderer renderer(film, cam, world);

@@ -13,7 +13,7 @@ Color Renderer::ray_color(const Ray& r, int& bounceCount) {
 
     // Background color
     return BACKGROUND_COLOR;
-    
+
     // Skybox
     /*
     glm::vec3 unit_direction = glm::normalize(r.direction());
@@ -43,13 +43,16 @@ Color Renderer::shade(Ray r, HitInfo hit, int& bounceCount) {
         Ray reflectRay(hit.p, reflectDir);
         ret += hit.material->get_reflectance() * ray_color(reflectRay, bounceCount);
     }
-    
+
     return ret;
 }
 
 void Renderer::render() {
-    for (std::size_t y = 0; y < film.getHeight(); ++y) {
-        for (std::size_t x = 0; x < film.getWidth(); ++x) {
+    const int height = film.getHeight();
+    const int width = film.getWidth();
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
             int bounceCount = 0;
             const Ray ray_primary = camera.get_ray(x, y);   // Generar rayo primario desde la cámara
             const Color c = ray_color(ray_primary, bounceCount);         // Intersectar con la escena y calcular el color

@@ -23,14 +23,13 @@ public:
     std::shared_ptr<Material> get_material() const { return material; }
 
 private:
-    bool is_interior(double a, double b) const;
-    bool is_interior(double a, double b, HitInfo& rec) const;
+    bool isInterior(float a, float b) const;
 
     glm::vec3 corner;
     glm::vec3 u;
     glm::vec3 v;
     glm::vec3 w;
     glm::vec3 normal;
-    double D;
+    float D;
     std::shared_ptr<Material> material;
 };
