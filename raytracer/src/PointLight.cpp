@@ -1,9 +1,8 @@
 #include "PointLight.h"
-#include "glm/geometric.hpp"
 #include <cmath>
 
 PointLight::PointLight(glm::vec3 pos, Color c)
-: Light(c)
+: Light(c, true)
 , position(pos)
 {
 
@@ -25,4 +24,8 @@ Color PointLight::shade(Ray r, HitInfo hit) {
     Color specular = color * specularIntensity ;
 
     return diffuse + specular;
+}
+
+glm::vec3 PointLight::getShadowDir(glm::vec3 pos) {
+    return glm::normalize(position - pos);
 }

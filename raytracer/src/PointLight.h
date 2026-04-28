@@ -9,6 +9,7 @@ public:
 
     Color shade(Ray r, HitInfo hit) override;
 
+    glm::vec3 getShadowDir(glm::vec3 pos) override;
 private:
     glm::vec3 position;
 };

@@ -34,10 +34,10 @@ int main(void) {
 
     std::shared_ptr<World> world = std::make_shared<World>(scene);
 
-    // std::shared_ptr<Light> directionalLight = std::make_shared<DirectionalLight>(glm::vec3{0,-1,-1}, WHITE);
-    // world->addLight(directionalLight);
+    std::shared_ptr<Light> directionalLight = std::make_shared<DirectionalLight>(glm::vec3{-1,-1,0}, WHITE);
+    world->addLight(directionalLight);
 
-    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2,2,0}, WHITE);
+    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{-2,2,3}, WHITE);
     world->addLight(pointLight);
 
     const Camera cam{
