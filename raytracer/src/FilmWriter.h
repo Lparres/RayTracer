@@ -7,10 +7,10 @@
 // FilmWriter se encarga de escribir el contenido de un Film a un archivo o stream en formato PPM P3
 class FilmWriter {
 public:
-    static void writePPM(const Film& film, std::ostream& out);
-    static void writePPM(const Film& film, const std::string& path);
+    static void writePPM(const Film& film, std::ostream& out, bool applyGamma = true);
+    static void writePPM(const Film& film, const std::string& path, bool applyGamma = true);
  
 private:
     // Convierte un canal en espacio lineal a un valor corregido gamma
-    static int linearToGamma(float channel);
+    static int linearToGamma(float channel, bool applyGamma = true);
 };

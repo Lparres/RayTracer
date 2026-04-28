@@ -5,14 +5,18 @@
 #include <cmath>
 #include <stdexcept>
  
-int FilmWriter::linearToGamma(float channel) {
-    // Clampeamos el canal a [0, 1], aplicamos corrección gamma (gamma 2.2) y escalamos a [0, 255].
+int FilmWriter::linearToGamma(float channel, bool applyGamma) {
+    // Clamp a [0,1]
     float clamped = glm::clamp(channel, 0.0f, 1.0f);
-    float gamma_corrected = std::pow(clamped, 1.0f / 2.2f);
+    if (!applyGamma) {
+        return static_cast<int>(255.999f * clamped);
+    }
+    // Aplicar corrección gamma 
+    float gamma_corrected = sqrt(clamped);
     return static_cast<int>(255.999f * gamma_corrected);
 }
 
-void FilmWriter::writePPM(const Film& film, std::ostream& out) {
+void FilmWriter::writePPM(const Film& film, std::ostream& out, bool applyGamma) {
     const int width  = film.getWidth();
     const int height = film.getHeight();
  
@@ -22,14 +26,14 @@ void FilmWriter::writePPM(const Film& film, std::ostream& out) {
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             const Color c = film.getPixel(x, y);
-            out << linearToGamma(c.r) << ' '
-                << linearToGamma(c.g) << ' '
-                << linearToGamma(c.b) << '\n';
+            out << linearToGamma(c.r, applyGamma) << ' '
+                << linearToGamma(c.g, applyGamma) << ' '
+                << linearToGamma(c.b, applyGamma) << '\n';
         }
     }
 }
  
-void FilmWriter::writePPM(const Film& film, const std::string& path) {
+void FilmWriter::writePPM(const Film& film, const std::string& path, bool applyGamma) {
     std::ofstream file(path);
-    writePPM(film, file);
+    writePPM(film, file, applyGamma);
 }

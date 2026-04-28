@@ -42,7 +42,7 @@ int main(void)
 
     const Camera cam{
         {0.0, 0.0, 3.0},
-        {0.0, 0.0, .0},
+        {0.0, 0.0, 0.0},
         {0.0, 1.0, 0.0},
         film,
         60.0
@@ -52,7 +52,8 @@ int main(void)
     renderer.render();
 
     // Exportamos el resultado a un archivo PPM
-    FilmWriter::writePPM(film, "imagen.ppm");
+    FilmWriter::writePPM(film, "imagenConGamma.ppm", true);
+    FilmWriter::writePPM(film, "imagenSinGamma.ppm", false);
 
     return 0;
 }
