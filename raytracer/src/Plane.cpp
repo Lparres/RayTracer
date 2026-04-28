@@ -5,9 +5,9 @@
 Plane::Plane(const glm::vec3 &corner,  glm::vec3 side1,  glm::vec3 side2, std::shared_ptr<Material> material)
     : corner(corner), u(side1), v(side2), material(material) {
         normal = glm::normalize(glm::cross(u, v));
-        D = -glm::dot(normal, corner);
-        auto n = glm::cross(glm::normalize(u), glm::normalize(v));
-        w = n/glm::dot(n, n);
+        D = glm::dot(normal, corner);
+        auto n = glm::cross(u, v);
+        w = n / glm::dot(n, n);
     }
 
 bool Plane::intersect(const Ray &ray, float tMin, float tMax) const {
@@ -37,13 +37,11 @@ bool Plane::intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) 
     // Implementación de la intersección del rayo con el plano
     auto denom = glm::dot(normal, ray.direction());
     if (std::fabs(denom) < 1e-8) {
-        std::cout << "Ray is parallel to plane, denom=" << denom << std::endl;
         return false; // El rayo es paralelo al plano
     }
 
     auto t = (D - glm::dot(normal, ray.origin())) / denom;
     if (t < tMin || t > tMax) {
-        // std::cout << "Ray intersects plane at t=" << t << " but outside tMin=" << tMin << " and tMax=" << tMax << std::endl;
         return false;
     }
 
@@ -55,15 +53,13 @@ bool Plane::intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) 
 
     if (!is_interior(alpha, beta, hitInfo)) {
         return false;
-        std::cout << "Hit plane at t=" << t << " but outside shape with alpha=" << alpha << " and beta=" << beta << std::endl;
     }
 
     // Ray hits the 2D shape; set the rest of the hit record and return true.
     hitInfo.t = t;
     hitInfo.p = intersection;
     hitInfo.material = material;
-    hitInfo.normal = normal;
-    std::cout << "Hit plane at t=" << t << " with alpha=" << alpha << " and beta=" << beta << std::endl;
+    hitInfo.normal = glm::dot(ray.direction(), normal) < 0.0f ? normal : -normal;
     return true;
 }
 
