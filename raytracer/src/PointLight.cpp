@@ -13,13 +13,13 @@ Color PointLight::computeLighting(const Ray& incoming, const HitInfo& hit) const
 
     // diffuse lighting
     float intensity = std::max(0.f, glm::dot(hit.normal, lightDir));
-    Color diffuse = color * intensity * hit.material->getAlbedo();
+    Color diffuse = color * intensity * hit.material->albedo(hit.uv);
 
     // specular
     glm::vec3 viewDir = glm::normalize(-incoming.direction());
     glm::vec3 halfVector = glm::normalize(lightDir + viewDir);
     float specularIntensity = std::max(0.f , glm::dot(hit.normal , halfVector));
-    specularIntensity = std::pow(specularIntensity , hit.material->getSpecular());
+    specularIntensity = std::pow(specularIntensity , hit.material->specular());
     Color specular = color * specularIntensity ;
 
     return diffuse + specular;

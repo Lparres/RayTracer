@@ -3,81 +3,74 @@
 #include <cmath>
 #include <stdexcept>
 
-Plane::Plane(const glm::vec3 &Q,  glm::vec3 side1,  glm::vec3 side2, std::shared_ptr<Material> material) :
-    Q(Q),
-    u(side1),
-    v(side2),
-    material(material)
+Plane::Plane(const glm::vec3& Q, glm::vec3 side1, glm::vec3 side2, std::shared_ptr<Material> material)
+    : Q(Q)
+    , u(side1)
+    , v(side2)
+    , material(std::move(material))
 {
     const glm::vec3 n = glm::cross(u, v);
-    const float nSquaredLength = glm::dot(n, n);
-    if (nSquaredLength <= 0.0f) {
-        throw std::invalid_argument("Plane side vectors cannot be parallel");
-    }
+    const float nLenSq = glm::dot(n, n);
+    if (nLenSq <= 0.0f)
+        throw std::invalid_argument("Plane: side vectors must not be parallel");
 
     normal = glm::normalize(n);
-    D = glm::dot(normal, Q);
-    w = n / nSquaredLength;
+    D      = glm::dot(normal, Q);
+    w      = n / nLenSq;
 }
 
-bool Plane::intersect(const Ray &ray, float tMin, float tMax) const
+// --- Helpers privados ---------------------------------------------------------
+
+float Plane::planeIntersectT(float denom, float D, const glm::vec3& normal, const Ray& ray) const
 {
-    // Calcular el denominador para determinar si el rayo es paralelo al plano
-    const float denom = glm::dot(normal, ray.direction());
     if (std::fabs(denom) < 1e-8f)
-        return false;
-
-    // Calcular el valor de t para la intersección con el plano
-    const float t = (D - glm::dot(normal, ray.origin())) / denom;
-    if (t < tMin || t > tMax)
-        return false;
-
-    // Determinar si el punto de intersección está dentro de los límites del plano
-    // usando las coordenadas locales (alpha, beta) del plano
-    const auto intersection = ray.at(t);
-    const glm::vec3 planar_hitpt_vector = intersection - Q;
-    const float alpha = glm::dot(w, glm::cross(planar_hitpt_vector, v));
-    const float beta = glm::dot(w, glm::cross(u, planar_hitpt_vector));
-
-    if (!isInterior(alpha, beta))
-        return false;
-
-    return true;
+        return -1.0f;
+    return (D - glm::dot(normal, ray.origin())) / denom;
 }
 
-bool Plane::intersect(const Ray &ray, float tMin, float tMax, HitInfo &hitInfo) const
+std::pair<float,float> Plane::localCoords(const glm::vec3& hitVec,
+                                          const glm::vec3& u,
+                                          const glm::vec3& v,
+                                          const glm::vec3& w) const
 {
-    // Calcular el denominador para determinar si el rayo es paralelo al plano
+    return { glm::dot(w, glm::cross(hitVec, v)),
+             glm::dot(w, glm::cross(u, hitVec)) };
+}
+
+bool Plane::isInterior(float a, float b) const
+{
+    return a >= 0.f && a <= 1.f && b >= 0.f && b <= 1.f;
+}
+
+// --- Intersección  -----------------------------------------------------------
+
+bool Plane::intersect(const Ray& ray, float tMin, float tMax) const
+{
     const float denom = glm::dot(normal, ray.direction());
-    if (std::fabs(denom) < 1e-8f)
-        return false;
+    const float t     = planeIntersectT(denom, D, normal, ray);
+    if (t < tMin || t > tMax) return false;
 
-    // Calcular el valor de t para la intersección con el plano
-    const float t = (D - glm::dot(normal, ray.origin())) / denom;
-    if (t < tMin || t > tMax)
-        return false;
+    const glm::vec3 hitVec = ray.at(t) - Q;
+    const auto [a, b]      = localCoords(hitVec, u, v, w);
+    return isInterior(a, b);
+}
 
-    // Determinar si el punto de intersección está dentro de los límites del plano
-    // usando las coordenadas locales (alpha, beta) del plano
-    const auto intersection = ray.at(t);
-    const glm::vec3 planar_hitpt_vector = intersection - Q;
-    const float alpha = glm::dot(w, glm::cross(planar_hitpt_vector, v));
-    const float beta = glm::dot(w, glm::cross(u, planar_hitpt_vector));
+bool Plane::intersect(const Ray& ray, float tMin, float tMax, HitInfo& hitInfo) const
+{
+    const float denom = glm::dot(normal, ray.direction());
+    const float t     = planeIntersectT(denom, D, normal, ray);
+    if (t < tMin || t > tMax) return false;
 
-    if (!isInterior(alpha, beta))
-        return false;
+    const glm::vec3 intersection = ray.at(t);
+    const glm::vec3 hitVec       = intersection - Q;
+    const auto [a, b]            = localCoords(hitVec, u, v, w);
+    if (!isInterior(a, b)) return false;
 
-    // Rellenar hitInfo con los detalles de la intersección
-    hitInfo.t = t;
-    hitInfo.p = intersection;
+    hitInfo.t        = t;
+    hitInfo.p        = intersection;
+    hitInfo.normal   = glm::dot(ray.direction(), normal) < 0.f ? normal : -normal;
+    hitInfo.uv       = { a, b };
     hitInfo.material = material;
-    hitInfo.u = alpha;
-    hitInfo.v = beta;
-    hitInfo.normal = glm::dot(ray.direction(), normal) < 0.0f ? normal : -normal;
 
     return true;
-}
-
-bool Plane::isInterior(float a, float b) const {
-    return a >= 0 && a <= 1 && b >= 0 && b <= 1;
 }

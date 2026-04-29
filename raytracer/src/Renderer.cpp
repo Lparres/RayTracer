@@ -36,7 +36,7 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hitInfo, i
     Color color = Color();
 
     // Luz ambiental
-    color += Color(0.1, 0.1, 0.1) * hitInfo.material->getAlbedo();
+    color += Color(0.1, 0.1, 0.1) * hitInfo.material->albedo(hitInfo.uv);
 
     // Luz directa
     for (const auto& light : world->getLights()) {
@@ -50,10 +50,10 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hitInfo, i
     }
 
     // Reflexiones
-    if(hitInfo.material->getReflectance() > 0.0f) {
+    if(hitInfo.material->reflectance() > 0.0f) {
         glm::vec3 reflectDir = glm::reflect(incomingRay.direction(), hitInfo.normal);
         Ray reflectRay(hitInfo.p, reflectDir);
-        color += hitInfo.material->getReflectance() * traceRay(reflectRay, currentDepth + 1);
+        color += hitInfo.material->reflectance() * traceRay(reflectRay, currentDepth + 1);
     }
 
     return color;
