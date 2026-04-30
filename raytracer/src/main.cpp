@@ -12,6 +12,7 @@
 #include "PointLight.h"
 #include "ConstantTexture.h"
 #include "CheckerTexture.h"
+#include "ImageTexture.h"
 
 #include <fstream>
 
@@ -19,22 +20,24 @@ int main(void)
 {
     Film film{1920, 1080};
 
-    ConstantTexture gris(Color(0.25f, 0.25f, 0.25f));
+    ConstantTexture verdeTexture(GREEN);
     ConstantTexture azulTexture(BLUE);
-    CheckerTexture patron1(gris, azulTexture, 4, 4);
-    CheckerTexture patron2(ConstantTexture(1.0f, 1.0f, 1.0f), azulTexture, 4, 4);
-    CheckerTexture patronFinal(patron1, patron2, 3, 4);
+    CheckerTexture patron1Texture(verdeTexture, azulTexture, 4, 4);
+    CheckerTexture patron2Texture(ConstantTexture(1.0f, 1.0f, 1.0f), azulTexture, 4, 4);
+    CheckerTexture patronFinalTexture(patron1Texture, patron2Texture, 3, 4);
+    ImageTexture maderaTexture("wood.png");
 
-    std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE, 30.0f, 0.5f);
-    std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW, 30.0f, 0.9f);
-    std::shared_ptr<Material> rojo = std::make_shared<Material>(RED, 30.0f, 0.5f);
-    std::shared_ptr<Material> verde = std::make_shared<Material>(GREEN, 30.0f, 0.5f);
-    std::shared_ptr<Material> sueloTexturizado = std::make_shared<Material>(patronFinal);
+    std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE, 60.0f, 0.5f);
+    std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW, 60.0f, 0.9f);
+    std::shared_ptr<Material> rojo = std::make_shared<Material>(RED, 60.0f, 0.5f);
+    std::shared_ptr<Material> verde = std::make_shared<Material>(GREEN, 60.0f, 0.5f);
+    std::shared_ptr<Material> sueloTexturizado = std::make_shared<Material>(patronFinalTexture);
+    std::shared_ptr<Material> madera = std::make_shared<Material>(maderaTexture);
 
 
     std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, rojo);
-    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -2.0f), 1.0f, amarillo);
-    std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(2.0f, 0.0f, -2.0f), 1.0f, sueloTexturizado);
+    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -2.0f), 1.0f, madera);
+    std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(2.0f, 0.0f, -2.0f), 1.0f, amarillo);
     // std::shared_ptr<Sphere> s4 = std::make_shared<Sphere>(glm::vec3(0, -100, -2), 99.0, verde);
     std::shared_ptr<Plane> s4 = std::make_shared<Plane>(glm::vec3(3.0f, -1.0f, 5.0f), glm::vec3(-6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -6.0f), sueloTexturizado);
 

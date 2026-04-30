@@ -12,7 +12,7 @@
 // Esto permite componer CheckerTextures anidadas a cualquier profundidad.
 class CheckerTexture final : public Texture {
 public:
-    CheckerTexture(const Texture& even, const Texture& odd, int rows, int columns)
+    explicit CheckerTexture(const Texture& even, const Texture& odd, int rows, int columns)
         : _even(even.clone())
         , _odd(odd.clone())
         , _rows(rows)
@@ -43,12 +43,6 @@ public:
     }
 
 private:
-    // Transforma una coordenada UV cualquiera a su equivalente dentro del rango [0,1].
-    static float wrap(float x) {
-        float w = std::fmod(x, 1.0f);
-        return w < 0.0f ? w + 1.0f : w;
-    }
-
     // Devuelve el índice de la celda para una coordenada en [0,1].
     static int cellIndex(float coord, int count) {
         const int i = static_cast<int>(std::floor(coord * count));

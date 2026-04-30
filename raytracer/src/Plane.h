@@ -35,7 +35,7 @@ private:
                           const Ray& ray) const;
 
     // Proyecta un vector sobre el plano y devuelve sus coordenadas locales (alpha, beta).
-    std::pair<float,float> Plane::localCoords(const glm::vec3& hitVec,
+    std::pair<float,float> localCoords(const glm::vec3& hitVec,
                                               const glm::vec3& u,
                                               const glm::vec3& v,
                                               const glm::vec3& w) const;
