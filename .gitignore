@@ -45,3 +45,5 @@
 
 # Vs Code
 .vscode/
+
+CMakePresets.json

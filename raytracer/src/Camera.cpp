@@ -15,8 +15,8 @@ Camera::Camera(
     float focusDistance
 ) : 
     position(position),
-    _focusAngle(focusAngle),
-    _focusDistance(focusDistance),
+    focusAngle(focusAngle),
+    focusDistance(focusDistance),
     gen(rd()),
     dist(-1.0f, 1.0f)
     {
@@ -24,25 +24,28 @@ Camera::Camera(
         throw std::invalid_argument("Film dimensions must be positive");
     }
 
-    const float fov_radians_vertical = glm::radians(fov_degrees_vertical * 0.5f);
-    const float half_height_normalized = std::tan(fov_radians_vertical);
-
-    const glm::vec3 forward_displacement = position - look;
-    const float focal_length = glm::length(forward_displacement);
-    if (focal_length <= 0.0f) {
-        throw std::invalid_argument("Camera position and look point cannot coincide");
+    if(focusDistance <= 0.0f) {
+        throw std::invalid_argument("Focus distance must be positive");
     }
 
-    const glm::vec3 forward = forward_displacement / focal_length;
-    glm::vec3 right = glm::cross(up, forward);
+    const float fov_radians_vertical = glm::radians(fov_degrees_vertical * 0.5f);
+    const float half_height = std::tan(fov_radians_vertical);
+
+    if (glm::length(position - look) <= 0.0f) {
+        throw std::invalid_argument("Camera position and look point cannot coincide");
+    }
+    forward = glm::normalize(position - look);
+
+    right = glm::cross(up, forward);
     const float right_length = glm::length(right);
     if (right_length <= 0.0f) {
         throw std::invalid_argument("Camera up vector cannot be parallel to the view direction");
     }
     right /= right_length;
-    const glm::vec3 up_orthonormal = glm::normalize(glm::cross(forward, right));
 
-    const float half_height_viewport = focal_length * half_height_normalized;
+    up = glm::normalize(glm::cross(forward, right));
+
+    const float half_height_viewport = focusDistance * half_height;
     const float half_width_viewport = half_height_viewport * film.getAspectRatio();
 
     const float height_viewport = half_height_viewport * 2.0f;
@@ -52,33 +55,39 @@ Camera::Camera(
     const float pixel_width = width_viewport / float(film.getWidth());
 
     delta_x = right * pixel_width;
-    delta_y = -up_orthonormal * pixel_height;
+    delta_y = -up * pixel_height;
     position_top_left =
-        position - focal_length * forward
-        + up_orthonormal * half_height_viewport + delta_x * 0.5f
+        position - focusDistance * forward
+        + up * half_height_viewport + delta_x * 0.5f
         - right * half_width_viewport + delta_y * 0.5f;
 
-    _blurRadius = _focusDistance * glm::tan( glm::radians(_focusAngle) / 2.0f );
+    blurRadius = focusDistance * glm::tan( glm::radians(focusAngle) / 2.0f );
 
-    
+    defocus_right = right * blurRadius;
+    defocus_up = up * blurRadius;
     
 }
 
 Ray Camera::getRay(int x, int y) const {
     const glm::vec3 sample = position_top_left + delta_x * (float)x + delta_y * (float)y;
 
-    glm::vec3 origen = position;
+    std::pair<float,float> blur = getRandomBlur();
+    glm::vec3 origin = 
+        focusAngle <= 0 ? position
+        : position + blur.first * defocus_right + blur.second * defocus_up;
 
-    origen.x += getRandomBlur();
-    origen.y += getRandomBlur();
+    glm::vec3 displacement = glm::normalize(sample - origin);
 
-    glm::vec3 displacement = (sample - origen);
-
-    return Ray{position, glm::normalize(displacement)};
+    return Ray{origin, displacement};
 }
 
-float Camera::getRandomBlur() const
-{
-    float randomNum = dist(gen);
-    return _blurRadius * randomNum;
+std::pair<float,float> Camera::getRandomBlur() const {
+    std::pair<float, float> blur;
+
+    do {
+        blur.first = dist(gen);
+        blur.second = dist(gen);
+    } while (blur.first * blur.first + blur.second * blur.second > 1.0f);
+
+    return blur;
 }
