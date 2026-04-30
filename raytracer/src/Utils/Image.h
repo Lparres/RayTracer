@@ -13,20 +13,8 @@ class Image {
     Image() {}
 
     Image(const std::string& filename) {
-        // TODO: busqueda desde la raiz del proyecto
-        auto imagedir = getenv("RTW_IMAGES");
-
-        // Hunt for the image file in some likely locations.
-        if (imagedir && load(std::string(imagedir) + "/" + filename)) return;
-        if (load(filename)) return;
-        if (load("images/" + filename)) return;
-        if (load("../images/" + filename)) return;
-        if (load("../../images/" + filename)) return;
-        if (load("../../../images/" + filename)) return;
-        if (load("../../../../images/" + filename)) return;
-        if (load("../../../../../images/" + filename)) return;
-        if (load("../../../../../../images/" + filename)) return;
-
+        std::string path = std::string(IMAGES_DIR) + '/' + filename;
+        if(load(path)) return;
         std::cerr << "ERROR: Could not load image file '" << filename << "'.\n";
     }
 

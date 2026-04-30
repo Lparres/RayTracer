@@ -28,3 +28,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/external
 )
+
+# Para búsquedas desde la raíz del proyecto
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        PROJECT_ROOT="${PROJECT_SOURCE_DIR}"
+        IMAGES_DIR="${PROJECT_SOURCE_DIR}/images"
+)
