@@ -58,7 +58,9 @@ int main(void)
         {0.0, 0.0, 0.0},
         {0.0, 1.0, 0.0},
         film,
-        60.0f
+        60.0f,
+        0.5f,
+        5.0f
     };
 
     Renderer renderer(film, cam, world);

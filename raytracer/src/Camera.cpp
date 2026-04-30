@@ -4,13 +4,22 @@
 
 #include <stdexcept>
 
+
 Camera::Camera(
     glm::vec3 position,
     glm::vec3 look,
     glm::vec3 up,
     const Film &film,
-    const float fov_degrees_vertical
-) : position(position) {
+    const float fov_degrees_vertical,
+    float focusAngle,
+    float focusDistance
+) : 
+    position(position),
+    _focusAngle(focusAngle),
+    _focusDistance(focusDistance),
+    gen(rd()),
+    dist(-1.0f, 1.0f)
+    {
     if (film.getWidth() <= 0 || film.getHeight() <= 0) {
         throw std::invalid_argument("Film dimensions must be positive");
     }
@@ -48,12 +57,28 @@ Camera::Camera(
         position - focal_length * forward
         + up_orthonormal * half_height_viewport + delta_x * 0.5f
         - right * half_width_viewport + delta_y * 0.5f;
+
+    _blurRadius = _focusDistance * glm::tan( glm::radians(_focusAngle) / 2.0f );
+
+    
+    
 }
 
 Ray Camera::getRay(int x, int y) const {
-    const glm::vec3 sample =
-        position_top_left + delta_x * (float)x + delta_y * (float)y;
-    const glm::vec3 displacement = (sample - position);
+    const glm::vec3 sample = position_top_left + delta_x * (float)x + delta_y * (float)y;
+
+    glm::vec3 origen = position;
+
+    origen.x += getRandomBlur();
+    origen.y += getRandomBlur();
+
+    glm::vec3 displacement = (sample - origen);
 
     return Ray{position, glm::normalize(displacement)};
+}
+
+float Camera::getRandomBlur() const
+{
+    float randomNum = dist(gen);
+    return _blurRadius * randomNum;
 }
