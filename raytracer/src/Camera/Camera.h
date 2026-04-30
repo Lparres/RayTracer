@@ -44,7 +44,6 @@ private:
     float focusDistance;
 
     // Internal precomputed
-    float blurRadius;
     glm::vec3 defocus_right;
     glm::vec3 defocus_up;
 

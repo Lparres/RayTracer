@@ -61,7 +61,7 @@ Camera::Camera(
         + up * half_height_viewport + delta_x * 0.5f
         - right * half_width_viewport + delta_y * 0.5f;
 
-    blurRadius = focusDistance * glm::tan( glm::radians(focusAngle) / 2.0f );
+    const float blurRadius = focusDistance * glm::tan( glm::radians(focusAngle) / 2.0f );
 
     defocus_right = right * blurRadius;
     defocus_up = up * blurRadius;
