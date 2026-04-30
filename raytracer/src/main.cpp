@@ -22,10 +22,11 @@ int main(void)
 
     ConstantTexture verdeTexture(GREEN);
     ConstantTexture azulTexture(BLUE);
-    CheckerTexture patron1Texture(verdeTexture, azulTexture, 4, 4);
-    CheckerTexture patron2Texture(ConstantTexture(1.0f, 1.0f, 1.0f), azulTexture, 4, 4);
-    CheckerTexture patronFinalTexture(patron1Texture, patron2Texture, 3, 4);
+    ConstantTexture whiteTexture(WHITE);
     ImageTexture maderaTexture("wood.png");
+    CheckerTexture patron1Texture(verdeTexture, maderaTexture, 4, 4);
+    CheckerTexture patron2Texture(whiteTexture, azulTexture, 4, 4);
+    CheckerTexture patronFinalTexture(patron1Texture, patron2Texture, 3, 4);
 
     std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE, 60.0f, 0.5f);
     std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW, 60.0f, 0.9f);
