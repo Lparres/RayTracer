@@ -10,14 +10,14 @@ class Material {
 public:
     // Construye un material con un albedo homogéneo.
     explicit Material(Color albedo, float specular = 30.f, float reflectance = 0.f)
-        : _albedoTexture(std::make_shared<ConstantTexture>(albedo))
+        : _albedoTexture(ConstantTexture::createTexture(albedo))
         , _specular(specular)
         , _reflectance(reflectance)
     {}
 
     // Construye un material con un albedo dado por una textura.
-    explicit Material(const Texture& albedoTexture, float specular = 30.f, float reflectance = 0.f)
-        : _albedoTexture(albedoTexture.clone())
+    explicit Material(std::shared_ptr<Texture> albedoTexture, float specular = 30.f, float reflectance = 0.f)
+        : _albedoTexture(albedoTexture)
         , _specular(specular)
         , _reflectance(reflectance)
     {}

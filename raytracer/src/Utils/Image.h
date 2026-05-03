@@ -20,8 +20,7 @@ class Image {
     }
 
     Image(const Image& other)
-    : bytes_per_pixel(other.bytes_per_pixel)
-    , image_width(other.image_width)
+    : image_width(other.image_width)
     , image_height(other.image_height)
     , bytes_per_scanline(other.bytes_per_scanline)
     {

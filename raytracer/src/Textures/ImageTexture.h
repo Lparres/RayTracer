@@ -6,8 +6,14 @@
 
 // Textura que obtiene el color de una imagen cargada
 class ImageTexture final : public Texture {
+// Factoría
 public:
-    explicit ImageTexture(const std::string& filename) : image(filename) {}
+    static std::shared_ptr<ImageTexture> createTexture(const std::string& filename) {
+        return std::make_shared<ImageTexture>(Private(), filename);
+    }
+
+public:
+    explicit ImageTexture(Private p, const std::string& filename) : image(filename) {}
 
     Color sample(UV uv) const override {
         // Si la imagen no se ha cargado correctamente, devuelve magenta
@@ -22,10 +28,6 @@ public:
 
         const float colorScale = 1.0f / 255.0f;
         return Color(data[0]*colorScale, data[1]*colorScale, data[2]*colorScale); 
-    }
-
-    std::shared_ptr<Texture> clone() const override {
-        return std::make_shared<ImageTexture>(*this);
     }
 
 private:

@@ -20,13 +20,13 @@ int main(void)
 {
     Film film{1920, 1080};
 
-    ConstantTexture verdeTexture(GREEN);
-    ConstantTexture azulTexture(BLUE);
-    ConstantTexture whiteTexture(WHITE);
-    ImageTexture maderaTexture("wood.png");
-    CheckerTexture patron1Texture(verdeTexture, maderaTexture, 4, 4);
-    CheckerTexture patron2Texture(whiteTexture, azulTexture, 4, 4);
-    CheckerTexture patronFinalTexture(patron1Texture, patron2Texture, 3, 4);
+    std::shared_ptr<ConstantTexture> verdeTexture = ConstantTexture::createTexture(GREEN);
+    std::shared_ptr<ConstantTexture> azulTexture = ConstantTexture::createTexture(BLUE);
+    std::shared_ptr<ConstantTexture> whiteTexture = ConstantTexture::createTexture(WHITE);
+    std::shared_ptr<ImageTexture> maderaTexture = ImageTexture::createTexture("wood.png");
+    std::shared_ptr<CheckerTexture> patron1Texture = CheckerTexture::createTexture(verdeTexture, maderaTexture, 4, 4);
+    std::shared_ptr<CheckerTexture> patron2Texture = CheckerTexture::createTexture(whiteTexture, azulTexture, 4, 4);
+    std::shared_ptr<CheckerTexture> patronFinalTexture = CheckerTexture::createTexture(patron1Texture, patron2Texture, 3, 4);
 
     std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE, 60.0f, 0.5f);
     std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW, 60.0f, 0.9f);

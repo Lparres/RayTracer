@@ -13,7 +13,7 @@ struct UV {
 
 // Interfaz base para todo tipo de texturas.
 // Las texturas son value-like: clonar produce una copia independiente.
-class Texture {
+class Texture : public std::enable_shared_from_this<Texture> {
 public:
     virtual ~Texture() = default;
 
@@ -21,7 +21,7 @@ public:
     virtual Color sample(UV uv) const = 0;
 
     // Produce una copia profunda de la textura.
-    virtual std::shared_ptr<Texture> clone() const = 0;
+    // virtual std::shared_ptr<Texture> clone() const = 0;
 
 protected:
     // Transforma una coordenada UV cualquiera a su equivalente dentro del rango [0,1].
@@ -33,5 +33,8 @@ protected:
     static float clamp(float x) {
         return x < 0.0f ? 0.0f : (x > 1.0f ? 1.0f : x);
     }
+
+    // struct privado que fuerza a utilizar la factoría para crear texturas
+    struct Private { explicit Private() = default; };
 };
 

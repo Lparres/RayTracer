@@ -11,10 +11,20 @@
 // normalizando las coordenadas UV a la celda local [0,1]x[0,1].
 // Esto permite componer CheckerTextures anidadas a cualquier profundidad.
 class CheckerTexture final : public Texture {
+// Factoría
 public:
-    explicit CheckerTexture(const Texture& even, const Texture& odd, int rows, int columns)
-        : _even(even.clone())
-        , _odd(odd.clone())
+    static std::shared_ptr<CheckerTexture> createTexture(
+        std::shared_ptr<Texture> even, 
+        std::shared_ptr<Texture> odd, 
+        int rows, int columns
+    ) {
+        return std::make_shared<CheckerTexture>(Private(), even, odd, rows, columns);
+    }
+
+public:
+    explicit CheckerTexture(Private p, std::shared_ptr<Texture> even, std::shared_ptr<Texture> odd, int rows, int columns)
+        : _even(even)
+        , _odd(odd)
         , _rows(rows)
         , _columns(columns)
     {
@@ -36,10 +46,6 @@ public:
 
         const bool isEven = (col + row) % 2 == 0;
         return isEven ? _even->sample(localUV) : _odd->sample(localUV);
-    }
-
-    std::shared_ptr<Texture> clone() const override {
-        return std::make_shared<CheckerTexture>(*this);
     }
 
 private:

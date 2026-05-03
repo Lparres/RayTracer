@@ -4,17 +4,23 @@
 
 // Textura hhomogénea que devuelve el mismo color para cualquier coordenada UV.
 class ConstantTexture final : public Texture {
+// Factoría
 public:
-    explicit ConstantTexture(Color color) : _color(color) {}
+    static std::shared_ptr<ConstantTexture> createTexture(Color color) {
+        return std::make_shared<ConstantTexture>(Private(), color);
+    }
 
-    ConstantTexture(float r, float g, float b) : _color(r, g, b) {}
+    static std::shared_ptr<ConstantTexture> createTexture(float r, float g, float b) {
+        return std::make_shared<ConstantTexture>(Private(), r,g,b);
+    }
+
+public:
+    explicit ConstantTexture(Private p, Color color) : _color(color) {}
+
+    ConstantTexture(Private p, float r, float g, float b) : _color(r, g, b) {}
 
     Color sample(UV) const override {
         return _color;
-    }
-
-    std::shared_ptr<Texture> clone() const override {
-        return std::make_shared<ConstantTexture>(*this);
     }
 
 private:
