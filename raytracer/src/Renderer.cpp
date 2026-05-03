@@ -21,6 +21,7 @@ void Renderer::render() {
                 film.setPixel(x, y, c * samplesInv);    // Escribir el color en el film
         }
     }
+    std::cout << "Terminado :)\n";
 }
 
 Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)

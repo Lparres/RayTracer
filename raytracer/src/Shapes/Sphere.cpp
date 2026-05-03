@@ -42,8 +42,8 @@ UV Sphere::sphericalUV(const glm::vec3& n) const
     //   u: longitud en [0,1], este desde el eje -X
     //   v: latitud  en [0,1], norte desde el polo sur
     return {
-        0.5f + std::atan2(n.z, n.x) / (2.0f * PI),
-        0.5f - std::asin(n.y) / PI
+        0.5f - std::atan2(n.z, n.x) / (2.0f * PI),
+        0.5f + std::asin(n.y) / PI
     };
 }
 
