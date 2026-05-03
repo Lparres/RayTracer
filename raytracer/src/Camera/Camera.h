@@ -26,8 +26,9 @@ public:
 
 
 private:
-
-    std::pair<float,float> getRandomBlur() const;
+    // Devuelve un punto aleatorio en un círculo
+    std::pair<float,float> randomInCircle() const;
+    std::pair<float, float> randomInSquare() const;
 
     glm::vec3 position;
     glm::vec3 delta_x;

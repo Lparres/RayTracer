@@ -69,9 +69,13 @@ Camera::Camera(
 }
 
 Ray Camera::getRay(int x, int y) const {
-    const glm::vec3 sample = position_top_left + delta_x * (float)x + delta_y * (float)y;
+    std::pair<float, float> sampleOffset = randomInSquare();
+    const glm::vec3 sample = 
+        position_top_left 
+        + delta_x * (static_cast<float>(x) + sampleOffset.first)
+        + delta_y * (static_cast<float>(y) + sampleOffset.second);
 
-    std::pair<float,float> blur = getRandomBlur();
+    std::pair<float,float> blur = randomInCircle();
     glm::vec3 origin = 
         focusAngle <= 0 ? position
         : position + blur.first * defocus_right + blur.second * defocus_up;
@@ -81,13 +85,22 @@ Ray Camera::getRay(int x, int y) const {
     return Ray{origin, displacement};
 }
 
-std::pair<float,float> Camera::getRandomBlur() const {
-    std::pair<float, float> blur;
+std::pair<float,float> Camera::randomInCircle() const {
+    std::pair<float, float> point;
 
     do {
-        blur.first = dist(gen);
-        blur.second = dist(gen);
-    } while (blur.first * blur.first + blur.second * blur.second > 1.0f);
+        point.first = dist(gen);
+        point.second = dist(gen);
+    } while (point.first * point.first + point.second * point.second > 1.0f);
 
-    return blur;
+    return point;
+}
+
+std::pair<float, float> Camera::randomInSquare() const {
+    std::pair<float, float> point;
+
+    point.first = dist(gen) - 0.5f;
+    point.second = dist(gen) - 0.5f;
+
+    return point;
 }

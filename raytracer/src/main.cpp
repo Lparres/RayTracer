@@ -23,7 +23,7 @@ int main(void)
     std::shared_ptr<ConstantTexture> verdeTexture = ConstantTexture::createTexture(GREEN);
     std::shared_ptr<ConstantTexture> azulTexture = ConstantTexture::createTexture(BLUE);
     std::shared_ptr<ConstantTexture> whiteTexture = ConstantTexture::createTexture(WHITE);
-    std::shared_ptr<ImageTexture> maderaTexture = ImageTexture::createTexture("wood.png");
+    std::shared_ptr<ImageTexture> maderaTexture = ImageTexture::createTexture("earth.jpg");
     std::shared_ptr<CheckerTexture> patron1Texture = CheckerTexture::createTexture(verdeTexture, maderaTexture, 4, 4);
     std::shared_ptr<CheckerTexture> patron2Texture = CheckerTexture::createTexture(whiteTexture, azulTexture, 4, 4);
     std::shared_ptr<CheckerTexture> patronFinalTexture = CheckerTexture::createTexture(patron1Texture, patron2Texture, 3, 4);
@@ -59,7 +59,7 @@ int main(void)
         {0.0, 1.0, 0.0},
         film,
         60.0f,
-        1.5f,
+        0.f,
         5.0f
     };
 

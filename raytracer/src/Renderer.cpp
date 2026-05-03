@@ -1,15 +1,24 @@
 #include "Renderer.h"
 #include "glm/geometric.hpp"
+#include <iostream>
 
 void Renderer::render() {
     const int height = film.getHeight();
     const int width = film.getWidth();
 
+    // Para trackear el progreso
+    int totalSteps = 10;
+    int progressStep = height / totalSteps;
+
     for (int y = 0; y < height; ++y) {
+        if(y % progressStep == 0) std::cout << "Renderizando... " << y * 100 / height << "%\n";
         for (int x = 0; x < width; ++x) {
-            const Ray rayPrimary = camera.getRay(x, y);    // Generar rayo primario desde la cámara
-            const Color c = traceRay(rayPrimary, 0);       // Intersectar con la escena y calcular el color
-            film.setPixel(x, y, c);                        // Escribir el color en el film
+            Color c = BLACK;
+            for(int i = 0; i < samples; ++i) {
+                const Ray rayPrimary = camera.getRay(x, y);    // Generar rayo primario desde la cámara
+                c += traceRay(rayPrimary, 0);       // Intersectar con la escena y calcular el color
+            }
+                film.setPixel(x, y, c * samplesInv);    // Escribir el color en el film
         }
     }
 }
