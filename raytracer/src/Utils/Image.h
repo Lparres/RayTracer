@@ -7,10 +7,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <algorithm>
 
 class Image {
   public:
-    Image() {}
+    Image() = delete;
 
     Image(const std::string& filename) {
         std::string path = std::string(IMAGES_DIR) + '/' + filename;
@@ -18,10 +19,31 @@ class Image {
         std::cerr << "ERROR: Could not load image file '" << filename << "'.\n";
     }
 
+    Image(const Image& other)
+    : bytes_per_pixel(other.bytes_per_pixel)
+    , image_width(other.image_width)
+    , image_height(other.image_height)
+    , bytes_per_scanline(other.bytes_per_scanline)
+    {
+        const int total_bytes  = image_width * image_height * bytes_per_pixel;
+
+        if (other.fdata) {
+            fdata = new float[total_bytes];
+            std::copy(other.fdata, other.fdata + total_bytes, fdata);
+        }
+
+        if (other.bdata) {
+            bdata = new unsigned char[total_bytes];
+            std::copy(other.bdata, other.bdata + total_bytes, bdata);
+        } 
+    }
+
     ~Image() {
-        delete[] bdata;
+        delete [] bdata;
         STBI_FREE(fdata);
     }
+
+    Image& operator=(const Image& other) = delete;
 
     bool load(const std::string& filename) {
         // Loads the linear (gamma=1) image data from the given file name. Returns true if the
@@ -70,11 +92,11 @@ class Image {
     }
 
     static unsigned char float_to_byte(float value) {
-        if (value <= 0.0)
+        if (value <= 0.0f)
             return 0;
-        if (1.0 <= value)
+        if (1.0f <= value)
             return 255;
-        return static_cast<unsigned char>(256.0 * value);
+        return static_cast<unsigned char>(256.0f * value);
     }
 
     void convert_to_bytes() {
