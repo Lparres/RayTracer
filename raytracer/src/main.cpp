@@ -13,6 +13,7 @@
 #include "ConstantTexture.h"
 #include "CheckerTexture.h"
 #include "ImageTexture.h"
+#include "BlinnPhongMaterial.h"
 
 #include <fstream>
 
@@ -30,12 +31,12 @@ int main(void)
     std::shared_ptr<CheckerTexture> patronFinalTexture = CheckerTexture::createTexture(patron1Texture, patron2Texture, 6, 8);
 
     // std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE, 60.0f, 0.5f);
-    std::shared_ptr<Material> amarillo = std::make_shared<Material>(YELLOW, 60.0f, 0.9f);
-    std::shared_ptr<Material> rojo = std::make_shared<Material>(RED, 60.0f, 0.5f);
-    std::shared_ptr<Material> verde = std::make_shared<Material>(GREEN, 60.0f, 0.5f);
-    std::shared_ptr<Material> sueloTexturizado = std::make_shared<Material>(patronFinalTexture);
-    std::shared_ptr<Material> madera = std::make_shared<Material>(maderaTexture);
-    std::shared_ptr<Material> earth = std::make_shared<Material>(earthTexture);
+    std::shared_ptr<Material> amarillo = std::make_shared<BlinnPhongMaterial>(YELLOW, 60.0f, 0.9f);
+    std::shared_ptr<Material> rojo = std::make_shared<BlinnPhongMaterial>(RED, 60.0f, 0.5f);
+    std::shared_ptr<Material> verde = std::make_shared<BlinnPhongMaterial>(GREEN, 60.0f, 0.9f);
+    std::shared_ptr<Material> sueloTexturizado = std::make_shared<BlinnPhongMaterial>(patronFinalTexture, 60.f, 0.9f);
+    std::shared_ptr<Material> madera = std::make_shared<BlinnPhongMaterial>(maderaTexture);
+    std::shared_ptr<Material> earth = std::make_shared<BlinnPhongMaterial>(earthTexture);
 
 
     std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -1.f), 1.0f, rojo);
@@ -61,8 +62,8 @@ int main(void)
         {0.0, 1.0, 0.0},
         film,
         60.0f,
-        0.6f,
-        7.0f
+        0.f,
+        5.0f
     };
 
     Renderer renderer(film, cam, world);

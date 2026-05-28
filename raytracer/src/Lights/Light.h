@@ -21,11 +21,13 @@ public:
     virtual ~Light() = default;
 
     // Devuelve la contribución de la luz en el punto de intersección proporcionado.
-    virtual Color computeLighting(const Ray &incoming, const HitInfo &hit) const = 0;
+    // virtual Color computeLighting(const Ray &incoming, const HitInfo &hit) const = 0;
 
     // Genera el rayo de sombra y la distancia máxima de comprobación para esta luz.
     virtual ShadowRay getShadowRay(const glm::vec3& hitPoint) const = 0;
 
+    Color getColor() const { return color; }
+    glm::vec3 getPosOrDir() const { return posOrDir; }
     bool castsShadows() const { return castShadows; }
 
 protected:

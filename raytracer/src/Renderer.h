@@ -11,8 +11,8 @@
 //      - Calcular el color de cada píxel usando las luces y materiales
 
 class Renderer {
-    static constexpr int maxDepth = 10;
-    static constexpr int samples = 200;
+    static constexpr int maxDepth = 3;
+    static constexpr int samples = 10;
     static constexpr float samplesInv = 1.f / samples; // double?
     const Color backgroundColor = BLACK;
 
@@ -25,7 +25,7 @@ public:
 
 private:
     Color traceRay(const Ray& incomingRay, int currentDepth);
-    Color computeShading(const Ray& incomingRay, const HitInfo& hitInfo, int currentDepth);
+    Color computeShading(const Ray& incomingRay, const HitInfo& hit, int currentDepth);
     Color sampleEnvironment(const Ray& incomingRay) const;
 
 private:

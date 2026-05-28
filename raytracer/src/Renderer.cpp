@@ -32,41 +32,55 @@ Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)
     }
 
     // Intersectamos el rayo con la escena
-    HitInfo hitInfo;
-    if (world->getScene().intersect(incomingRay, 0.001f, 1000.0f, hitInfo)) {
-        return computeShading(incomingRay, hitInfo, currentDepth);
+    HitInfo hit;
+    if (world->getScene().intersect(incomingRay, 0.001f, 1000.0f, hit)) {
+
+        // Iluminación directa
+        Color direct = computeShading(incomingRay, hit, currentDepth);
+        
+        // Iluminación indirecta (rayos reflejados)
+        Ray scattered;
+        Color attenuation;
+
+        if(hit.material->scatter(incomingRay, hit, attenuation, scattered))
+            direct += attenuation * traceRay(scattered, currentDepth + 1);
+        
+        return direct;
     }
 
     // Si no hay intersección, muestreamos el color del entorno
     return sampleEnvironment(incomingRay);
 }
 
-Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hitInfo, int currentDepth)
+Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit, int currentDepth)
 {
-    Color color = Color();
+    Color Lo = Color();
 
     // Luz ambiental
-    color += Color(0.1, 0.1, 0.1) * hitInfo.material->albedo(hitInfo.uv);
+    Lo += Color(0.1, 0.1, 0.1) * hit.material->albedo(hit.uv);
 
     // Luz directa
     for (const auto& light : world->getLights()) {
         if(light->castsShadows()) {
-            const Light::ShadowRay shadowRay = light->getShadowRay(hitInfo.p);
+            const Light::ShadowRay shadowRay = light->getShadowRay(hit.p);
             if (world->getScene().intersect(shadowRay.ray, 0.001f, shadowRay.maxDistance)) {
                 continue;
             }
         }
-        color += light->computeLighting(incomingRay, hitInfo);
+
+        Color Li = light->getColor();
+        glm::vec3 wi = glm::normalize(light->getPosOrDir() - hit.p);
+
+        // BRDF
+        Color f = hit.material->evaluateDirect(wi, -incomingRay.direction(), hit);
+
+        float lambert = std::max(glm::dot(hit.normal, wi), 0.f);
+        
+        // Ecuación de renderizado: 
+        Lo += Li * f * lambert;
     }
 
-    // Reflexiones
-    if(hitInfo.material->reflectance() > 0.0f) {
-        glm::vec3 reflectDir = glm::reflect(incomingRay.direction(), hitInfo.normal);
-        Ray reflectRay(hitInfo.p, reflectDir);
-        color += hitInfo.material->reflectance() * traceRay(reflectRay, currentDepth + 1);
-    }
-
-    return color;
+    return Lo;
 }
 
 Color Renderer::sampleEnvironment(const Ray& incomingRay) const
