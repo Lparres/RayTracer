@@ -37,14 +37,14 @@ Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)
 
         // Iluminación directa
         Color direct = computeShading(incomingRay, hit, currentDepth);
-        
+
         // Iluminación indirecta (rayos reflejados)
         Ray scattered;
         Color attenuation;
 
         if(hit.material->scatter(incomingRay, hit, attenuation, scattered))
             direct += attenuation * traceRay(scattered, currentDepth + 1);
-        
+
         return direct;
     }
 
@@ -69,14 +69,14 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit, int c
         }
 
         Color Li = light->getColor();
-        glm::vec3 wi = glm::normalize(light->getPosOrDir() - hit.p);
+        glm::vec3 wi = light->getWi(hit.p);
 
         // BRDF
         Color f = hit.material->evaluateDirect(wi, -incomingRay.direction(), hit);
 
         float lambert = std::max(glm::dot(hit.normal, wi), 0.f);
-        
-        // Ecuación de renderizado: 
+
+        // Ecuación de renderizado:
         Lo += Li * f * lambert;
     }
 

@@ -70,8 +70,7 @@ int main(void)
     renderer.render();
 
     // Exportamos el resultado a un archivo PPM
-    FilmWriter::writePPM(film, "imagenConGamma.ppm", true);
-    FilmWriter::writePPM(film, "imagenSinGamma.ppm", false);
+    FilmWriter::writePPM(film, "imagenSalida.ppm", true);
 
     return 0;
 }

@@ -10,4 +10,8 @@ public:
     ~PointLight() = default;
 
     ShadowRay getShadowRay(const glm::vec3& hitPoint) const override;
+    glm::vec3 getWi(const glm::vec3& hitPoint) const override;
+
+private:
+    glm::vec3 position;
 };

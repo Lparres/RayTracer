@@ -26,18 +26,16 @@ public:
     // Genera el rayo de sombra y la distancia máxima de comprobación para esta luz.
     virtual ShadowRay getShadowRay(const glm::vec3& hitPoint) const = 0;
 
+    virtual glm::vec3 getWi(const glm::vec3& hitPoint) const = 0;
     Color getColor() const { return color; }
-    glm::vec3 getPosOrDir() const { return posOrDir; }
     bool castsShadows() const { return castShadows; }
 
 protected:
-    Light(Color c, glm::vec3 posOrDir, bool castShadows) :
+    Light(Color c, bool castShadows) :
         color(c),
-        posOrDir(posOrDir),
         castShadows(castShadows)
     {}
 
     Color color;
-    glm::vec3 posOrDir;
     bool castShadows;
 };
