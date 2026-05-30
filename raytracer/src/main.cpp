@@ -25,7 +25,6 @@ int main(void)
     std::shared_ptr<ConstantTexture> verdeTexture = ConstantTexture::createTexture(GREEN);
     // std::shared_ptr<ConstantTexture> azulTexture = ConstantTexture::createTexture(BLUE);
     std::shared_ptr<ConstantTexture> whiteTexture = ConstantTexture::createTexture(WHITE);
-    std::shared_ptr<ImageTexture> earthTexture = ImageTexture::createTexture("earth.jpg");
     std::shared_ptr<ImageTexture> maderaTexture = ImageTexture::createTexture("wood.png");
     std::shared_ptr<CheckerTexture> patron1Texture = CheckerTexture::createTexture(verdeTexture, maderaTexture, 2, 2);
     std::shared_ptr<CheckerTexture> patron2Texture = CheckerTexture::createTexture(whiteTexture, maderaTexture, 2, 2);
@@ -39,9 +38,9 @@ int main(void)
     std::shared_ptr<Material> verde = std::make_shared<CookTorranceMaterial>(GREEN, 0.5f, 0.0f);
     std::shared_ptr<Material> sueloTexturizado = std::make_shared<CookTorranceMaterial>(patronFinalTexture, 0.3f, 0.0f);
     std::shared_ptr<Material> madera = std::make_shared<CookTorranceMaterial>(maderaTexture, 0.7f, 0.0f);
-    std::shared_ptr<ImageTexture> earthAlbedo = ImageTexture::createTexture("images/Earth_ALB.png");
-    std::shared_ptr<ImageTexture> earthNormal = ImageTexture::createTexture("images/Earth_NORM.png");
-    std::shared_ptr<ImageTexture> earthRough  = ImageTexture::createTexture("images/Earth_ROUGH.png");
+    std::shared_ptr<ImageTexture> earthAlbedo = ImageTexture::createTexture("Earth_ALB.png");
+    std::shared_ptr<ImageTexture> earthNormal = ImageTexture::createTexture("Earth_NORM.png");
+    std::shared_ptr<ImageTexture> earthRough  = ImageTexture::createTexture("Earth_ROUGH.png");
     std::shared_ptr<ConstantTexture> earthMetal = ConstantTexture::createTexture(Color(0.0f));
 
     auto earth = std::make_shared<CookTorranceMaterial>(
@@ -65,7 +64,7 @@ int main(void)
 
     std::shared_ptr<World> world = std::make_shared<World>(scene);
 
-    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2.0f, 2.0f, 2.0f}, WHITE);
+    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2.0f, 2.0f, 2.0f}, WHITE, 2.0f);
     world->addLight(pointLight);
 
     const Camera cam{

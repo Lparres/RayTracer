@@ -33,11 +33,13 @@ public:
     bool castsShadows() const { return castShadows; }
 
 protected:
-    Light(Color c, bool castShadows) :
-        color(c),
-        castShadows(castShadows)
+    Light(Color c, float intensity, bool castShadows)
+        : color(c)
+        , intensity(intensity)
+        , castShadows(castShadows)
     {}
 
     Color color;
+    float intensity = 1.0f;
     bool castShadows;
 };

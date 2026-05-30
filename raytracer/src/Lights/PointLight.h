@@ -6,7 +6,7 @@
 // Define la posición de la luz y su color
 class PointLight : public Light {
 public:
-    PointLight(glm::vec3 pos, Color c);
+    PointLight(glm::vec3 pos, Color c, float intensity = 1.0f);
     ~PointLight() = default;
 
     LightContribution getLightContribution(const glm::vec3& hitPoint) const override;
