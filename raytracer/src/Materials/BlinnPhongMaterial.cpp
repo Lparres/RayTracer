@@ -31,12 +31,9 @@ Color BlinnPhongMaterial::evaluateDirect(const glm::vec3& wi, const glm::vec3& w
 }
 
 bool BlinnPhongMaterial::scatter(const Ray& incoming, const HitInfo& hit, Color& attenuation, Ray& scattered) const {
-    if(_reflectance <= 0.0f)
-        return false;
-
     glm::vec3 reflectDir = glm::reflect(incoming.direction(), hit.normal);
     scattered = Ray(hit.p, reflectDir);
     attenuation = Color(_reflectance);
 
-    return true;
+    return (attenuation.r + attenuation.g + attenuation.b) > EPSILON;
 }
