@@ -1,8 +1,11 @@
 #include "Renderer.h"
 #include "glm/geometric.hpp"
+#include <chrono>
+#include <iomanip>
 #include <iostream>
 
 void Renderer::render() {
+    const auto startTime = std::chrono::steady_clock::now();
     const int height = film.getHeight();
     const int width = film.getWidth();
 
@@ -22,6 +25,11 @@ void Renderer::render() {
         }
     }
     std::cout << "Terminado :)\n";
+
+    const auto endTime = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> elapsedSeconds = endTime - startTime;
+    std::cout << std::fixed << std::setprecision(2)
+              << "Tiempo de render: " << elapsedSeconds.count() << " s\n";
 }
 
 Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)
