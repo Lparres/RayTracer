@@ -48,7 +48,6 @@ private:
     glm::vec3 defocus_right;
     glm::vec3 defocus_up;
 
-    std::random_device rd;
     mutable std::mt19937 gen;
     mutable std::uniform_real_distribution<float> dist;
 };

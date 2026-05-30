@@ -17,7 +17,7 @@ Camera::Camera(
     position(position),
     focusAngle(focusAngle),
     focusDistance(focusDistance),
-    gen(rd()),
+    gen(std::random_device{}()),
     dist(-1.0f, 1.0f)
     {
     if (film.getWidth() <= 0 || film.getHeight() <= 0) {
