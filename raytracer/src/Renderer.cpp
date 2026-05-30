@@ -60,16 +60,12 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit)
     Lo += Color(0.1, 0.1, 0.1) * hit.material->albedo(hit.uv);
 
     // Luz directa
-    for (const auto& light : world->getLights()) {
-        if(light->castsShadows()) {
-            const Light::ShadowRay shadowRay = light->getShadowRay(hit.p);
-            if (world->getScene().intersect(shadowRay.ray, 0.001f, shadowRay.maxDistance)) {
-                continue;
-            }
-        }
+    for (const auto& light : world->getLights())
+    {
+        auto [shadowRay, wi, Li] = light->getLightContribution(hit.p);
 
-        Color Li = light->getColor();
-        glm::vec3 wi = light->getWi(hit.p);
+        if (light->castsShadows() && world->getScene().intersect(shadowRay.ray, 0.001f, shadowRay.maxDistance))
+            continue;
 
         // BRDF
         Color f = hit.material->evaluateDirect(wi, -incomingRay.direction(), hit);

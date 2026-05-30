@@ -7,14 +7,16 @@ PointLight::PointLight(glm::vec3 pos, Color c) :
     position(pos)
 {}
 
-glm::vec3 PointLight::getWi(const glm::vec3& hitPoint) const {
-    return glm::normalize(position - hitPoint);
-}
-
-Light::ShadowRay PointLight::getShadowRay(const glm::vec3& hitPoint) const {
+Light::LightContribution PointLight::getLightContribution(const glm::vec3& hitPoint) const {
     const glm::vec3 toLight = position - hitPoint;
     const float distance = glm::length(toLight);
-    const glm::vec3 direction = distance > 0.0f ? toLight / distance : glm::vec3(0.0f);
+    const glm::vec3 wi = distance > 0.0f ? toLight / distance : glm::vec3(0.0f);
+    const float d2 = distance * distance;
+    const Color Li = d2 > 0.0f ? color / d2 : color;
 
-    return { Ray(hitPoint, direction), distance };
+    return {
+        { Ray(hitPoint, wi), distance },
+        wi,
+        Li
+    };
 }

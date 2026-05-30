@@ -8,11 +8,10 @@ DirectionalLight::DirectionalLight(glm::vec3 dir, Color c) :
     direction(glm::normalize(dir))
 {}
 
-glm::vec3 DirectionalLight::getWi(const glm::vec3&) const {
-    return -direction;
-}
-
-Light::ShadowRay DirectionalLight::getShadowRay(const glm::vec3& hitPoint) const {
-    const glm::vec3 direction = -direction;
-    return { Ray(hitPoint, direction), std::numeric_limits<float>::infinity() };
+Light::LightContribution DirectionalLight::getLightContribution(const glm::vec3& hitPoint) const {
+    return {
+        { Ray(hitPoint, -direction), std::numeric_limits<float>::infinity() },
+        -direction,
+        color
+    };
 }

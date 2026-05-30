@@ -18,16 +18,18 @@ public:
         float maxDistance;
     };
 
+    struct LightContribution {
+        ShadowRay shadowRay;
+        glm::vec3 wi;
+        Color Li;
+    };
+
     virtual ~Light() = default;
 
     // Devuelve la contribución de la luz en el punto de intersección proporcionado.
     // virtual Color computeLighting(const Ray &incoming, const HitInfo &hit) const = 0;
 
-    // Genera el rayo de sombra y la distancia máxima de comprobación para esta luz.
-    virtual ShadowRay getShadowRay(const glm::vec3& hitPoint) const = 0;
-
-    virtual glm::vec3 getWi(const glm::vec3& hitPoint) const = 0;
-    Color getColor() const { return color; }
+    virtual LightContribution getLightContribution(const glm::vec3& hitPoint) const = 0;
     bool castsShadows() const { return castShadows; }
 
 protected:

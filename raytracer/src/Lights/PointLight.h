@@ -9,8 +9,7 @@ public:
     PointLight(glm::vec3 pos, Color c);
     ~PointLight() = default;
 
-    ShadowRay getShadowRay(const glm::vec3& hitPoint) const override;
-    glm::vec3 getWi(const glm::vec3& hitPoint) const override;
+    LightContribution getLightContribution(const glm::vec3& hitPoint) const override;
 
 private:
     glm::vec3 position;
