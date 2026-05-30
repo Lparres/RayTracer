@@ -66,8 +66,16 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit)
 {
     Color Lo = Color();
 
-    // Luz ambiental
-    Lo += Color(0.1, 0.1, 0.1) * hit.material->albedo(hit.uv) * hit.material->ambientOcclusion(hit.uv);
+    // Esto no funciona porque evalúa especular sin querer, generando reflejos falsos.
+    //Creo que hay que hacer un evaluateAmbient que en lugar de evaluar el lóbulo especular GGX,
+    // usa F0 directamente como aporximación de la luz ambiental esepcular
+    // Pero bueno por ahora lo dejo así
+    glm::vec3 wi_ambient = hit.normal;
+    Color f_ambient = hit.material->evaluateDirect(wi_ambient, -incomingRay.direction(), hit);
+    Lo += Color(0.1f) * f_ambient * hit.material->ambientOcclusion(hit.uv);
+
+    // Esta forma de evaluar luz ambiente no es correcta en
+    //Lo += Color(0.1, 0.1, 0.1) * hit.material->albedo(hit.uv) * hit.material->ambientOcclusion(hit.uv);
 
     // Luz directa
     for (const auto& light : world->getLights())

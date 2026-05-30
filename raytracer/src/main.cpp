@@ -16,32 +16,47 @@
 #include "BlinnPhongMaterial.h"
 #include "CookTorranceMaterial.h"
 
+#include <chrono>
+#include <iomanip>
 #include <fstream>
 
 int main(void)
 {
     Film film{1920, 1080};
 
+    std::cout << "Cargando texturas...\n";
+    const auto texturesStartTime = std::chrono::steady_clock::now();
+
+    // Carga de texturas
     std::shared_ptr<ConstantTexture> verdeTexture = ConstantTexture::createTexture(GREEN);
-    // std::shared_ptr<ConstantTexture> azulTexture = ConstantTexture::createTexture(BLUE);
+    std::shared_ptr<ConstantTexture> azulTexture = ConstantTexture::createTexture(BLUE);
     std::shared_ptr<ConstantTexture> whiteTexture = ConstantTexture::createTexture(WHITE);
     std::shared_ptr<ImageTexture> maderaTexture = ImageTexture::createTexture("wood.png");
     std::shared_ptr<CheckerTexture> patron1Texture = CheckerTexture::createTexture(verdeTexture, maderaTexture, 2, 2);
     std::shared_ptr<CheckerTexture> patron2Texture = CheckerTexture::createTexture(whiteTexture, maderaTexture, 2, 2);
     std::shared_ptr<CheckerTexture> patronFinalTexture = CheckerTexture::createTexture(patron1Texture, patron2Texture, 6, 8);
+    std::shared_ptr<ImageTexture> earthAlbedo = ImageTexture::createTexture("8081_earthmap10k.jpg");
+    std::shared_ptr<ImageTexture> earthNormal = ImageTexture::createTexture("earth_normal_map.jpg");
+    std::shared_ptr<ImageTexture> earthRough  = ImageTexture::createTexture("8081_earthspec10k.jpg");
+    std::shared_ptr<ConstantTexture> earthMetal = ConstantTexture::createTexture(Color(0.0f));
 
-    // std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE, 60.0f, 0.5f);
+    const auto texturesEndTime = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> texturesElapsedSeconds = texturesEndTime - texturesStartTime;
+    std::cout << std::fixed << std::setprecision(2)
+              << "Tiempo de carga de texturas: " << texturesElapsedSeconds.count() << " s\n";
+
+    std::cout << "Cargando materiales...\n";
+    const auto materialsStartTime = std::chrono::steady_clock::now();
+
+    // Creación de materiales
+    std::shared_ptr<Material> azul = std::make_shared<BlinnPhongMaterial>(BLUE, 60.0f, 0.5f);
     // Oro
     const Color GOLD = Color(1.0f, 0.766f, 0.336f);
-    std::shared_ptr<Material> amarillo = std::make_shared<CookTorranceMaterial>(GOLD, 0.12f, 1.0f);
+    std::shared_ptr<Material> amarillo = std::make_shared<CookTorranceMaterial>(GOLD, 0.4f, 1.0f);
     std::shared_ptr<Material> rojo = std::make_shared<CookTorranceMaterial>(RED, 0.08f, 0.0f);
     std::shared_ptr<Material> verde = std::make_shared<CookTorranceMaterial>(GREEN, 0.5f, 0.0f);
     std::shared_ptr<Material> sueloTexturizado = std::make_shared<CookTorranceMaterial>(patronFinalTexture, 0.3f, 0.0f);
     std::shared_ptr<Material> madera = std::make_shared<CookTorranceMaterial>(maderaTexture, 0.7f, 0.0f);
-    std::shared_ptr<ImageTexture> earthAlbedo = ImageTexture::createTexture("Earth_ALB.png");
-    std::shared_ptr<ImageTexture> earthNormal = ImageTexture::createTexture("Earth_NORM.png");
-    std::shared_ptr<ImageTexture> earthRough  = ImageTexture::createTexture("Earth_ROUGH.png");
-    std::shared_ptr<ConstantTexture> earthMetal = ConstantTexture::createTexture(Color(0.0f));
 
     auto earth = std::make_shared<CookTorranceMaterial>(
         earthAlbedo,
@@ -50,6 +65,15 @@ int main(void)
     );
     earth->setNormalMap(earthNormal);
 
+    const auto materialsEndTime = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> materialsElapsedSeconds = materialsEndTime - materialsStartTime;
+    std::cout << std::fixed << std::setprecision(2)
+              << "Tiempo de creacion de materiales: " << materialsElapsedSeconds.count() << " s\n";
+
+    std::cout << "Instanciando escena...\n";
+    const auto sceneStartTime = std::chrono::steady_clock::now();
+
+    // Instanciación de la escena
     std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -1.f), 1.0f, rojo);
     std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -2.0f), 1.0f, earth);
     std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(2.0f, 0.0f, -3.f), 1.0f, amarillo);
@@ -64,7 +88,7 @@ int main(void)
 
     std::shared_ptr<World> world = std::make_shared<World>(scene);
 
-    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2.0f, 2.0f, 2.0f}, WHITE, 2.0f);
+    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2.0f, 2.0f, 2.0f}, WHITE, 30.0f);
     world->addLight(pointLight);
 
     const Camera cam{
@@ -77,11 +101,22 @@ int main(void)
         5.0f
     };
 
+    const auto sceneEndTime = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> sceneElapsedSeconds = sceneEndTime - sceneStartTime;
+    std::cout << std::fixed << std::setprecision(2)
+              << "Tiempo de instanciacion de escena: " << sceneElapsedSeconds.count() << " s\n";
+
     Renderer renderer(film, cam, world);
     renderer.render();
 
     // Exportamos el resultado a un archivo PPM
-    FilmWriter::writePPM(film, "imagen5BlinnPhong.ppm", true);
+    std::cout << "Exportando resultado...\n";
+    const auto writeStart = std::chrono::steady_clock::now();
+    FilmWriter::writePPM(film, "intensidad30.ppm", true);
+    const auto writeEnd = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> writeElapsed = writeEnd - writeStart;
+    std::cout << std::fixed << std::setprecision(2)
+              << "Tiempo de exportacion PPM: " << writeElapsed.count() << " s\n";
 
     return 0;
 }
