@@ -43,6 +43,8 @@ Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)
     HitInfo hit;
     if (world->getScene().intersect(incomingRay, 0.001f, 1000.0f, hit)) {
 
+        hit.normal = hit.material->shadingNormal(hit);
+
         // Iluminación directa
         Color direct = computeShading(incomingRay, hit);
 
@@ -65,7 +67,7 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit)
     Color Lo = Color();
 
     // Luz ambiental
-    Lo += Color(0.1, 0.1, 0.1) * hit.material->albedo(hit.uv);
+    Lo += Color(0.1, 0.1, 0.1) * hit.material->albedo(hit.uv) * hit.material->ambientOcclusion(hit.uv);
 
     // Luz directa
     for (const auto& light : world->getLights())

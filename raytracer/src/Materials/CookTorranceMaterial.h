@@ -20,14 +20,25 @@ public:
     );
 
     explicit CookTorranceMaterial(
-        std::shared_ptr<Texture> albedoTexture,
+        std::shared_ptr<Texture> albedo,
         float roughness = 0.5f,
         float metallic  = 0.0f
     );
 
+    explicit CookTorranceMaterial(
+        std::shared_ptr<Texture> albedo,
+        std::shared_ptr<Texture> roughness,
+        std::shared_ptr<Texture> metallic
+    );
+
     virtual ~CookTorranceMaterial() = default;
 
+    void setNormalMap(std::shared_ptr<Texture> normalMap) { _normalMap = std::move(normalMap); }
+    void setAOTexture(std::shared_ptr<Texture> aoTexture) { _aoTexture = std::move(aoTexture); }
+
     Color albedo(UV uv = {}) const override { return _albedoTexture->sample(uv); }
+    float     ambientOcclusion(UV uv = {}) const override;
+    glm::vec3 shadingNormal(const HitInfo& hit) const override;
 
     Color evaluateDirect(const glm::vec3& wi, const glm::vec3& wo, const HitInfo& hit) const override;
     bool  scatter(const Ray& incoming, const HitInfo& hit, Color& attenuation, Ray& scattered) const override;
@@ -44,7 +55,9 @@ private:
                          const glm::vec3& l, float roughness);
     static float G_SchlickGGX(float NdotV, float k);
 
-    std::shared_ptr<Texture> _albedoTexture;
-    float _roughness;
-    float _metallic;
+    std::shared_ptr<Texture> _albedoTexture = nullptr;
+    std::shared_ptr<Texture> _roughnessTexture = nullptr;
+    std::shared_ptr<Texture> _metallicTexture = nullptr;
+    std::shared_ptr<Texture> _normalMap = nullptr;
+    std::shared_ptr<Texture> _aoTexture = nullptr;
 };

@@ -35,12 +35,21 @@ int main(void)
     // Oro
     const Color GOLD = Color(1.0f, 0.766f, 0.336f);
     std::shared_ptr<Material> amarillo = std::make_shared<CookTorranceMaterial>(GOLD, 0.12f, 1.0f);
-    std::shared_ptr<Material> rojo = std::make_shared<CookTorranceMaterial>(RED, 0.5f, 0.0f);
+    std::shared_ptr<Material> rojo = std::make_shared<CookTorranceMaterial>(RED, 0.08f, 0.0f);
     std::shared_ptr<Material> verde = std::make_shared<CookTorranceMaterial>(GREEN, 0.5f, 0.0f);
     std::shared_ptr<Material> sueloTexturizado = std::make_shared<CookTorranceMaterial>(patronFinalTexture, 0.3f, 0.0f);
     std::shared_ptr<Material> madera = std::make_shared<CookTorranceMaterial>(maderaTexture, 0.7f, 0.0f);
-    std::shared_ptr<Material> earth = std::make_shared<CookTorranceMaterial>(earthTexture, 0.6f, 0.0f);
+    std::shared_ptr<ImageTexture> earthAlbedo = ImageTexture::createTexture("images/Earth_ALB.png");
+    std::shared_ptr<ImageTexture> earthNormal = ImageTexture::createTexture("images/Earth_NORM.png");
+    std::shared_ptr<ImageTexture> earthRough  = ImageTexture::createTexture("images/Earth_ROUGH.png");
+    std::shared_ptr<ConstantTexture> earthMetal = ConstantTexture::createTexture(Color(0.0f));
 
+    auto earth = std::make_shared<CookTorranceMaterial>(
+        earthAlbedo,
+        earthRough,
+        earthMetal
+    );
+    earth->setNormalMap(earthNormal);
 
     std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(-2.0f, 0.0f, -1.f), 1.0f, rojo);
     std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(0.0f, 0.0f, -2.0f), 1.0f, earth);

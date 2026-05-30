@@ -20,4 +20,15 @@ public:
 
     // Para el cálculo de la luz ambiente
     virtual Color albedo(UV uv = {}) const = 0;
+
+    // Devuelve 1.0 si no hay textura AO — el renderer lo aplica al término ambiental
+    virtual float     ambientOcclusion(UV uv = {}) const;
+
+    // Devuelve la normal perturbada si hay normal map, o hit.normal si no hay
+    // El renderer llama a esto UNA SOLA VEZ antes de cualquier cálculo
+    virtual glm::vec3 shadingNormal(const HitInfo& hit) const;
+
+protected:
+    // Helper compartido: transforma una normal de tangent space a world space via TBN
+    static glm::vec3 perturbNormal(const HitInfo& hit, const Texture& normalMap);
 };

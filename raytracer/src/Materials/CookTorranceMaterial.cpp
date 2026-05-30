@@ -8,17 +8,35 @@ static constexpr float PI      = 3.14159265358979323846f;
 static constexpr float EPSILON = 1e-7f;
 
 CookTorranceMaterial::CookTorranceMaterial(Color albedo, float roughness, float metallic)
-    : _albedoTexture(ConstantTexture::createTexture(albedo))
-    , _roughness(glm::clamp(roughness, 0.f, 1.f))
-    , _metallic (glm::clamp(metallic,  0.f, 1.f))
+    : _albedoTexture   (ConstantTexture::createTexture(albedo))
+    , _roughnessTexture(ConstantTexture::createTexture(Color(roughness)))
+    , _metallicTexture (ConstantTexture::createTexture(Color(metallic)))
 {}
 
-CookTorranceMaterial::CookTorranceMaterial(std::shared_ptr<Texture> albedoTexture,
+CookTorranceMaterial::CookTorranceMaterial(std::shared_ptr<Texture> albedo,
                                             float roughness, float metallic)
-    : _albedoTexture(std::move(albedoTexture))
-    , _roughness(glm::clamp(roughness, 0.f, 1.f))
-    , _metallic (glm::clamp(metallic,  0.f, 1.f))
+    : _albedoTexture   (std::move(albedo))
+    , _roughnessTexture(ConstantTexture::createTexture(Color(roughness)))
+    , _metallicTexture (ConstantTexture::createTexture(Color(metallic)))
 {}
+
+CookTorranceMaterial::CookTorranceMaterial(std::shared_ptr<Texture> albedo,
+                                            std::shared_ptr<Texture> roughness,
+                                            std::shared_ptr<Texture> metallic)
+    : _albedoTexture   (std::move(albedo))
+    , _roughnessTexture(std::move(roughness))
+    , _metallicTexture (std::move(metallic))
+{}
+
+float CookTorranceMaterial::ambientOcclusion(UV uv) const
+{
+    return _aoTexture ? _aoTexture->sample(uv).r : 1.0f;
+}
+
+glm::vec3 CookTorranceMaterial::shadingNormal(const HitInfo& hit) const
+{
+    return _normalMap ? perturbNormal(hit, *_normalMap) : hit.normal;
+}
 
 // ─── D: Trowbridge-Reitz GGX ──────────────────────────────────────────────────
 //
@@ -72,25 +90,29 @@ float CookTorranceMaterial::G_Smith(const glm::vec3& n, const glm::vec3& v,
 
 // ─── BRDF completa ────────────────────────────────────────────────────────────
 
-Color CookTorranceMaterial::evaluateDirect(const glm::vec3& wi, const glm::vec3& wo,
-                                            const HitInfo& hit) const
+Color CookTorranceMaterial::evaluateDirect(const glm::vec3 &wi, const glm::vec3 &wo,
+                                           const HitInfo &hit) const
 {
+    const float roughness = glm::clamp(_roughnessTexture->sample(hit.uv).r, 0.f, 1.f);
+    const float metallic  = glm::clamp(_metallicTexture->sample(hit.uv).r,  0.f, 1.f);
+    Color albedoBase = albedo(hit.uv);
+
     const glm::vec3& n = hit.normal;
     const glm::vec3  h = glm::normalize(wi + wo);
 
     // Remapping perceptual: alpha = roughness^2 da una percepción más lineal
-    const float alpha = _roughness * _roughness;
+    const float alpha = roughness * roughness;
 
     // F0: reflectancia base en incidencia normal
     //   Dieléctrico típico - 0.04  (plástico, piedra, madera...)
     //   Metal              - albedo (los metales tienen reflectancia coloreada)
-    Color baseAlbedo = albedo(hit.uv);
-    Color F0 = Color(0.04f) * (1.f - _metallic) + baseAlbedo * _metallic;
+
+    Color F0 = Color(0.04f) * (1.f - metallic) + albedoBase * metallic;
 
     // Evaluar los tres términos
     const float Dval = D_GGX  (n, h, alpha);
     const Color Fval = F_Schlick(h, wo, F0);
-    const float Gval = G_Smith (n, wo, wi, _roughness);
+    const float Gval = G_Smith (n, wo, wi, roughness);
 
     // Lóbulo especular: DFG / (4 · (n·wo) · (n·wi))
     float NdotWo = std::max(glm::dot(n, wo), 0.f);
@@ -99,8 +121,8 @@ Color CookTorranceMaterial::evaluateDirect(const glm::vec3& wi, const glm::vec3&
 
     // Lóbulo difuso: kd · albedo / PI
     // kd = (1−F)·(1−metallic): los metales no tienen componente difusa
-    Color kd      = (Color(1.f) - Fval) * (1.f - _metallic);
-    Color diffuse = kd * baseAlbedo * (1.f / PI);
+    Color kd      = (Color(1.f) - Fval) * (1.f - metallic);
+    Color diffuse = kd * albedoBase * (1.f / PI);
 
     return diffuse + specular;
 }
@@ -117,9 +139,11 @@ bool CookTorranceMaterial::scatter(const Ray& incoming, const HitInfo& hit,
 
     // Metales: reflexión coloreada por el albedo, atenuada por la rugosidad
     // Dieléctricos: reflexión débil (4%), también atenuada por rugosidad
-    Color baseAlbedo = albedo(hit.uv);
-    Color F0 = Color(0.04f) * (1.f - _metallic) + baseAlbedo * _metallic;
-    attenuation = F0 * (1.f - _roughness);
+    const float roughness = glm::clamp(_roughnessTexture->sample(hit.uv).r, 0.f, 1.f);
+    const float metallic  = glm::clamp(_metallicTexture->sample(hit.uv).r,  0.f, 1.f);
+    Color albedoBase = albedo(hit.uv);
+    Color F0 = Color(0.04f) * (1.f - metallic) + albedoBase * metallic;
+    attenuation = F0 * (1.f - roughness);
 
     return (attenuation.r + attenuation.g + attenuation.b) > EPSILON;
 }

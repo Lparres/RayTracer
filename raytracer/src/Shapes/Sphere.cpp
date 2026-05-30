@@ -64,10 +64,24 @@ bool Sphere::intersect(const Ray& ray, float tMin, float tMax, HitInfo& hitInfo)
     hitInfo.material = _material;
 
     const glm::vec3 outwardNormal = glm::normalize(hitInfo.p - _center);
-    hitInfo.normal = glm::dot(ray.direction(), outwardNormal) < 0.0f
-                         ? outwardNormal
-                         : -outwardNormal;
+    const bool frontFace = glm::dot(ray.direction(), outwardNormal) < 0.f;
+    hitInfo.normal = frontFace ? outwardNormal : -outwardNormal;
     hitInfo.uv = sphericalUV(outwardNormal);
+
+
+    // Tangente: dirección de u creciente = cross(up, outwardNormal)
+    // Caso especial en los polos donde outwardNormal ≈ (0,±1,0)
+    glm::vec3 tangent;
+    if (std::abs(outwardNormal.y) > 0.999f) {
+        // En el polo la tangente esférica degenera elegimos un vector arbitrario
+        tangent = glm::vec3(1.f, 0.f, 0.f);
+    } else {
+        tangent = glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), outwardNormal));
+    }
+
+    // Si la normal se invirtió (cara trasera), la tangente también
+    hitInfo.tangent   = frontFace ? tangent : -tangent;
+    hitInfo.bitangent = glm::normalize(glm::cross(hitInfo.normal, hitInfo.tangent));
 
     return true;
 }

@@ -10,6 +10,8 @@ class HitInfo {
 public:
     glm::vec3 p{};
     glm::vec3 normal{};
+    glm::vec3 tangent{};    // para mapas de normales
+    glm::vec3 bitangent{};  // para mapas de normales
     float     t = 0.0f;
     UV        uv{};
     std::shared_ptr<Material> material;

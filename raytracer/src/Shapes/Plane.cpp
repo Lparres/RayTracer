@@ -66,11 +66,15 @@ bool Plane::intersect(const Ray& ray, float tMin, float tMax, HitInfo& hitInfo) 
     const auto [a, b]            = localCoords(hitVec, u, v, w);
     if (!isInterior(a, b)) return false;
 
-    hitInfo.t        = t;
-    hitInfo.p        = intersection;
-    hitInfo.normal   = glm::dot(ray.direction(), normal) < 0.f ? normal : -normal;
-    hitInfo.uv       = { a, b };
-    hitInfo.material = material;
+    const bool frontFace  = glm::dot(ray.direction(), normal) < 0.f;
+
+    hitInfo.t         = t;
+    hitInfo.p         = intersection;
+    hitInfo.normal    = frontFace ? normal : -normal;
+    hitInfo.tangent   = frontFace ? glm::normalize(u) : -glm::normalize(u);
+    hitInfo.bitangent = glm::normalize(v);
+    hitInfo.uv        = { a, b };
+    hitInfo.material  = material;
 
     return true;
 }
