@@ -34,7 +34,7 @@ int main(void)
     // std::shared_ptr<Material> azul = std::make_shared<Material>(BLUE, 60.0f, 0.5f);
     // Oro
     const Color GOLD = Color(1.0f, 0.766f, 0.336f);
-    std::shared_ptr<Material> amarillo = std::make_shared<CookTorranceMaterial>(GOLD, 0.12f, 1.0f);
+    std::shared_ptr<Material> amarillo = std::make_shared<BlinnPhongMaterial>(GOLD, 0.8f, 1.0f);
     std::shared_ptr<Material> rojo = std::make_shared<BlinnPhongMaterial>(RED, 60.0f, 0.5f);
     std::shared_ptr<Material> verde = std::make_shared<BlinnPhongMaterial>(GREEN, 60.0f, 0.9f);
     std::shared_ptr<Material> sueloTexturizado = std::make_shared<BlinnPhongMaterial>(patronFinalTexture, 60.f, 0.9f);
@@ -73,7 +73,7 @@ int main(void)
     renderer.render();
 
     // Exportamos el resultado a un archivo PPM
-    FilmWriter::writePPM(film, "imagen3CookTorrance.ppm", true);
+    FilmWriter::writePPM(film, "imagen5BlinnPhong.ppm", true);
 
     return 0;
 }

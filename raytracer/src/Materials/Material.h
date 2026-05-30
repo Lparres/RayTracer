@@ -20,7 +20,4 @@ public:
 
     // Para el cálculo de la luz ambiente
     virtual Color albedo(UV uv = {}) const = 0;
-
-protected:
-    static constexpr float EPSILON = 1e-7f;
 };

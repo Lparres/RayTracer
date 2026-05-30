@@ -5,6 +5,7 @@
 #include <cmath>
 
 static constexpr float PI      = 3.14159265358979323846f;
+static constexpr float EPSILON = 1e-7f;
 
 CookTorranceMaterial::CookTorranceMaterial(Color albedo, float roughness, float metallic)
     : _albedoTexture(ConstantTexture::createTexture(albedo))
@@ -30,7 +31,7 @@ float CookTorranceMaterial::D_GGX(const glm::vec3& n, const glm::vec3& h, float 
     float NdotH  = std::max(glm::dot(n, h), 0.f);
     float alpha2 = alpha * alpha;
     float inner  = NdotH * NdotH * (alpha2 - 1.f) + 1.f;
-    return alpha2 / (PI * inner * inner + Material::EPSILON);
+    return alpha2 / (PI * inner * inner + EPSILON);
 }
 
 // ─── F: Fresnel — aproximación de Schlick ────────────────────────────────────
@@ -120,5 +121,5 @@ bool CookTorranceMaterial::scatter(const Ray& incoming, const HitInfo& hit,
     Color F0 = Color(0.04f) * (1.f - _metallic) + baseAlbedo * _metallic;
     attenuation = F0 * (1.f - _roughness);
 
-    return (attenuation.r + attenuation.g + attenuation.b) > Material::EPSILON;
+    return (attenuation.r + attenuation.g + attenuation.b) > EPSILON;
 }
