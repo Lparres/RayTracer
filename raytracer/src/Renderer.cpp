@@ -18,7 +18,7 @@ void Renderer::render() {
                 const Ray rayPrimary = camera.getRay(x, y);    // Generar rayo primario desde la cámara
                 c += traceRay(rayPrimary, 0);       // Intersectar con la escena y calcular el color
             }
-                film.setPixel(x, y, c * samplesInv);    // Escribir el color en el film
+            film.setPixel(x, y, c * samplesInv);    // Escribir el color en el film
         }
     }
     std::cout << "Terminado :)\n";
@@ -36,7 +36,7 @@ Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)
     if (world->getScene().intersect(incomingRay, 0.001f, 1000.0f, hit)) {
 
         // Iluminación directa
-        Color direct = computeShading(incomingRay, hit, currentDepth);
+        Color direct = computeShading(incomingRay, hit);
 
         // Iluminación indirecta (rayos reflejados)
         Ray scattered;
@@ -52,7 +52,7 @@ Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)
     return sampleEnvironment(incomingRay);
 }
 
-Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit, int currentDepth)
+Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit)
 {
     Color Lo = Color();
 

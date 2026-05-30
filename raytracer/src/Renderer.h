@@ -25,7 +25,7 @@ public:
 
 private:
     Color traceRay(const Ray& incomingRay, int currentDepth);
-    Color computeShading(const Ray& incomingRay, const HitInfo& hit, int currentDepth);
+    Color computeShading(const Ray& incomingRay, const HitInfo& hit);
     Color sampleEnvironment(const Ray& incomingRay) const;
 
 private:
