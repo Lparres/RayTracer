@@ -13,7 +13,7 @@ Camera::Camera(
     const float fov_degrees_vertical,
     float focusAngle,
     float focusDistance
-) : 
+) :
     position(position),
     focusAngle(focusAngle),
     focusDistance(focusDistance),
@@ -43,7 +43,7 @@ Camera::Camera(
     }
     right /= right_length;
 
-    up = glm::normalize(glm::cross(forward, right));
+    this->up = glm::normalize(glm::cross(forward, right));
 
     const float half_height_viewport = focusDistance * half_height;
     const float half_width_viewport = half_height_viewport * film.getAspectRatio();
@@ -55,28 +55,28 @@ Camera::Camera(
     const float pixel_width = width_viewport / float(film.getWidth());
 
     delta_x = right * pixel_width;
-    delta_y = -up * pixel_height;
+    delta_y = -this->up * pixel_height;
     position_top_left =
         position - focusDistance * forward
-        + up * half_height_viewport + delta_x * 0.5f
+        + this->up * half_height_viewport + delta_x * 0.5f
         - right * half_width_viewport + delta_y * 0.5f;
 
     const float blurRadius = focusDistance * glm::tan( glm::radians(focusAngle) / 2.0f );
 
     defocus_right = right * blurRadius;
     defocus_up = up * blurRadius;
-    
+
 }
 
 Ray Camera::getRay(int x, int y) const {
     std::pair<float, float> sampleOffset = randomInSquare();
-    const glm::vec3 sample = 
-        position_top_left 
+    const glm::vec3 sample =
+        position_top_left
         + delta_x * (static_cast<float>(x) + sampleOffset.first)
         + delta_y * (static_cast<float>(y) + sampleOffset.second);
 
     std::pair<float,float> blur = randomInCircle();
-    glm::vec3 origin = 
+    glm::vec3 origin =
         focusAngle <= 0 ? position
         : position + blur.first * defocus_right + blur.second * defocus_up;
 
@@ -99,8 +99,8 @@ std::pair<float,float> Camera::randomInCircle() const {
 std::pair<float, float> Camera::randomInSquare() const {
     std::pair<float, float> point;
 
-    point.first = dist(gen) - 0.5f;
-    point.second = dist(gen) - 0.5f;
+    point.first = dist(gen) * 0.5f;
+    point.second = dist(gen) * 0.5f;
 
     return point;
 }
