@@ -2,6 +2,7 @@
 #include "Ray.h"
 #include "Camera.h"
 #include "Film.h"
+#include "HitInfo.h"
 #include "World.h"
 #include <memory>
 
@@ -12,7 +13,7 @@
 
 class Renderer {
     static constexpr int maxDepth = 3;
-    static constexpr int samples = 10;
+    static constexpr int samples = 2;
     static constexpr float samplesInv = 1.f / samples; // double?
     const Color backgroundColor = BLACK;
 
@@ -26,7 +27,7 @@ public:
 private:
     Color traceRay(const Ray& incomingRay, int currentDepth);
     Color computeShading(const Ray& incomingRay, const HitInfo& hit);
-    Color sampleEnvironment(const Ray& incomingRay) const;
+    // Color sampleEnvironment(const Ray& incomingRay) const;
 
 private:
     Film& film;

@@ -15,6 +15,9 @@
 #include "ImageTexture.h"
 #include "BlinnPhongMaterial.h"
 #include "CookTorranceMaterial.h"
+#include "GradientEnvironment.h"
+#include "HDRIEnvironment.h"
+#include "CubemapEnvironment.h"
 
 #include <chrono>
 #include <iomanip>
@@ -39,6 +42,15 @@ int main(void)
     std::shared_ptr<ImageTexture> earthNormal = ImageTexture::createTexture("earth_normal_map.jpg");
     std::shared_ptr<ImageTexture> earthRough  = ImageTexture::createTexture("8081_earthspec10k.jpg");
     std::shared_ptr<ConstantTexture> earthMetal = ConstantTexture::createTexture(Color(0.0f));
+    std::shared_ptr<ImageTexture> environmentMap = ImageTexture::createTexture("meadow.hdr");
+    /*
+    std::shared_ptr<ImageTexture> cubemap_top = ImageTexture::createTexture("skybox/top.jpg");
+    std::shared_ptr<ImageTexture> cubemap_left = ImageTexture::createTexture("skybox/left.jpg");
+    std::shared_ptr<ImageTexture> cubemap_front = ImageTexture::createTexture("skybox/front.jpg");
+    std::shared_ptr<ImageTexture> cubemap_right = ImageTexture::createTexture("skybox/right.jpg");
+    std::shared_ptr<ImageTexture> cubemap_back = ImageTexture::createTexture("skybox/back.jpg");
+    std::shared_ptr<ImageTexture> cubemap_bottom = ImageTexture::createTexture("skybox/bottom.jpg");
+    */
 
     const auto texturesEndTime = std::chrono::steady_clock::now();
     const std::chrono::duration<double> texturesElapsedSeconds = texturesEndTime - texturesStartTime;
@@ -90,6 +102,13 @@ int main(void)
 
     std::shared_ptr<Light> pointLight = std::make_shared<PointLight>(glm::vec3{2.0f, 2.0f, 2.0f}, WHITE, 30.0f);
     world->addLight(pointLight);
+
+    // std::shared_ptr<Environment> enviro = std::make_shared<GradientEnvironment>();
+    std::shared_ptr<Environment> enviro = std::make_shared<HDRIEnvironment>(environmentMap);
+    // std::shared_ptr<Environment> enviro = std::make_shared<CubemapEnvironment>(
+    //     cubemap_top, cubemap_left, cubemap_front, cubemap_right, cubemap_back, cubemap_bottom
+    // );
+    world->setEnvironment(enviro);
 
     const Camera cam{
         {0.0, 0.0, 3.0},

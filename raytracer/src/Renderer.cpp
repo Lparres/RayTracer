@@ -1,5 +1,7 @@
 #include "Renderer.h"
 #include "glm/geometric.hpp"
+#include "Scene.h"
+#include "Light.h"
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -59,7 +61,7 @@ Color Renderer::traceRay(const Ray& incomingRay, int currentDepth)
     }
 
     // Si no hay intersección, muestreamos el color del entorno
-    return sampleEnvironment(incomingRay);
+    return world->sampleEnvironment(incomingRay.direction());
 }
 
 Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit)
@@ -97,15 +99,15 @@ Color Renderer::computeShading(const Ray& incomingRay, const HitInfo& hit)
     return Lo;
 }
 
-Color Renderer::sampleEnvironment(const Ray& incomingRay) const
-{
+// Color Renderer::sampleEnvironment(const Ray& incomingRay) const
+// {
 
-    return backgroundColor;
+//     // return backgroundColor;
 
-    // Skybox
-    /*
-    glm::vec3 unitDirection = glm::normalize(incomingRay.direction());
-    float a = 0.5f * (unitDirection.y + 1.0f);
-    return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
-    */
-}
+//     // Skybox
+    
+//     glm::vec3 unitDirection = glm::normalize(incomingRay.direction());
+//     float a = 0.5f * (unitDirection.y + 1.0f);
+//     return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
+    
+// }
