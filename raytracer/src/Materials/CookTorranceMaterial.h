@@ -7,6 +7,8 @@
 #include "Texture.h"
 #include "ConstantTexture.h"
 
+struct ONB;
+
 // Modelo de iluminación físicamente realista (PBR).
 // Combina un lóbulo difuso Lambertiano con un lóbulo especular Cook-Torrance.
 class CookTorranceMaterial : public Material {
@@ -59,6 +61,9 @@ private:
     static float G_Smith(const glm::vec3& n, const glm::vec3& v,
                          const glm::vec3& l, float roughness);
     static float G_SchlickGGX(float NdotV, float k);
+
+    // VNDF - Eric Heitz (sampleo GGX de las normales visibles)
+    static glm::vec3 VNDF_GGX(const glm::vec3& woLocal, float alpha, float U1, float U2);
 
     std::shared_ptr<Texture> _albedoTexture = nullptr;
     std::shared_ptr<Texture> _roughnessTexture = nullptr;

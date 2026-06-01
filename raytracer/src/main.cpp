@@ -64,7 +64,7 @@ int main(void)
     std::shared_ptr<Material> azul = std::make_shared<BlinnPhongMaterial>(BLUE, 60.0f, 0.5f);
     // Oro
     const Color GOLD = Color(1.0f, 0.766f, 0.336f);
-    std::shared_ptr<Material> amarillo = std::make_shared<CookTorranceMaterial>(GOLD, 0.4f, 1.0f);
+    std::shared_ptr<Material> amarillo = std::make_shared<CookTorranceMaterial>(GOLD, 0.05f, 1.0f);
     std::shared_ptr<Material> rojo = std::make_shared<CookTorranceMaterial>(RED, 0.08f, 0.0f);
     std::shared_ptr<Material> verde = std::make_shared<CookTorranceMaterial>(GREEN, 0.5f, 0.0f);
     std::shared_ptr<Material> sueloTexturizado = std::make_shared<CookTorranceMaterial>(patronFinalTexture, 0.3f, 0.0f);

@@ -2,6 +2,7 @@
 #include "glm/geometric.hpp"
 #include "HitInfo.h"
 #include "Ray.h"
+#include "ONB.h"
 #include <cmath>
 
 static constexpr float PI      = 3.14159265358979323846f;
@@ -88,6 +89,43 @@ float CookTorranceMaterial::G_Smith(const glm::vec3& n, const glm::vec3& v,
     return G_SchlickGGX(NdotV, k) * G_SchlickGGX(NdotL, k);
 }
 
+glm::vec3 CookTorranceMaterial::VNDF_GGX(const glm::vec3& woLocal, float alpha, float U1, float U2)
+{
+    // Calculado en espacio local
+
+    // Configuración del hemisferio (Elipsoide => hemisferio)
+    glm::vec3 Vh = glm::normalize(glm::vec3(alpha * woLocal.x, alpha * woLocal.y, woLocal.z));
+
+    // Construimos la base
+    float lensq = Vh.x * Vh.x + Vh.y * Vh.y;
+
+    glm::vec3 T1 = lensq > 0.f 
+        ? glm::vec3(-Vh.y, Vh.x, 0.f) * glm::inversesqrt(lensq)
+        : glm::vec3(1.f, 0.f, 0.f);
+
+    glm::vec3 T2 = glm::cross(Vh, T1);
+
+    // Sampleamos el area proyectada del hemisferio
+    float r   = glm::sqrt(U1);
+    float phi = 2.f * PI * U2;
+    float t1 = r * std::cos(phi);
+    float t2 = r * std::sin(phi);
+    float s = 0.5f * (1.f + Vh.z);
+    t2 = (1.f - s) * glm::sqrt(1.f - t1*t1) + s * t2;
+
+    // Reproyectamos al hemisferio
+    glm::vec3 Nh = t1*T1 + t2*T2 + std::sqrt(std::max(0.f, 1.f - t1*t1 - t2*t2)) * Vh;
+
+    // Hemisferio => elipsoide
+    glm::vec3 Ne = glm::normalize(glm::vec3(
+                alpha * Nh.x,
+                alpha * Nh.y,
+                std::max(0.f, Nh.z)));
+
+    return Ne;
+}
+
+
 // ─── BRDF completa ────────────────────────────────────────────────────────────
 
 Color CookTorranceMaterial::evaluateDirect(const glm::vec3 &wi, const glm::vec3 &wo,
@@ -138,30 +176,42 @@ bool CookTorranceMaterial::scatter(const Ray& incoming, const HitInfo& hit,
     const Color F0 = Color(0.04f) * (1.f - metallic) + albedoBase * metallic;
 
     // Rayo especular (determinista)
-    const glm::vec3 reflectDir = glm::reflect(incoming.direction(), hit.normal);
+    ONB basis(hit.normal);
+    const glm::vec3 wo = -glm::normalize(incoming.direction());
+    const glm::vec3 woLocal = basis.worldToLocal(wo);
 
-    // Rayo difuso Lambertiano: normal + vector unitario aleatorio
-    const glm::vec3 randomUnit = glm::normalize(glm::vec3(_gauss(_rng), _gauss(_rng), _gauss(_rng)));
-    const glm::vec3 lambertDir = (glm::length(hit.normal + randomUnit) < 1e-4f)
-                             ? hit.normal
-                             : glm::normalize(hit.normal + randomUnit);
+    const float alpha = roughness * roughness;
+    std::uniform_real_distribution<float> dist(0.f, 1.f);
+    const float U1 = dist(_rng);
+    const float U2 = dist(_rng);
+    
+    glm::vec3 mLocal = VNDF_GGX(woLocal, alpha, U1, U2); 
+    const glm::vec3 m = glm::normalize(basis.localToWorld(mLocal)); // normal de la microfaceta
 
     // Escogemos rayo especular o difuso de forma estocástica basada en el término de Fresnel para simular la mezcla entre ambos
-    glm::vec3 v = -glm::normalize(incoming.direction());
-    Color F = F_Schlick(hit.normal, v, F0);
+    Color F = F_Schlick(m, wo, F0);
 
     // Probabilidad de especular (basada en el promedio RGB del término de Fresnel)
     // Se limita a [0.05, 0.95] para evitar dividir por 0 en casos extremos.
     float probSpecular = glm::clamp((F.r + F.g + F.b) / 3.0f, 0.05f, 0.95f);
     float probDiffuse = 1.0f - probSpecular;
 
-    std::uniform_real_distribution<float> dist(0.f, 1.f);
     if (dist(_rng) < probSpecular) {
+        const glm::vec3 reflectDir = glm::reflect(-wo, m);
+        
+        float NdotWi = std::max(glm::dot(hit.normal, reflectDir), 0.f);
+        float G1wi = G_SchlickGGX(NdotWi, alpha); // aproximación
+
         // Tomar el camino especular puro
         scattered = Ray(hit.p, reflectDir);
-        // Compensamos la atenuación dividiendo por la probabilidad para conservar energía
-        attenuation = F / probSpecular;
+        attenuation = (F * G1wi) / probSpecular;
     } else {
+        // Rayo difuso Lambertiano: normal + vector unitario aleatorio
+        const glm::vec3 randomUnit = glm::normalize(glm::vec3(_gauss(_rng), _gauss(_rng), _gauss(_rng)));
+        const glm::vec3 lambertDir = (glm::length(hit.normal + randomUnit) < 1e-4f)
+                                ? hit.normal
+                                : glm::normalize(hit.normal + randomUnit);
+                                
         // Tomar el camino difuso puro
         scattered = Ray(hit.p, lambertDir);
         Color kd = (Color(1.f) - F) * (1.f - metallic);
