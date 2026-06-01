@@ -24,7 +24,6 @@ void World::setEnvironment(std::shared_ptr<Environment> enviro) {
 }
 
 Color World::sampleEnvironment(const glm::vec3& rayDir) const {
-    // Si no se ha establecido un entorno, se devuelve negro por defecto
     if(environment == nullptr) return Color(0.f);
-    return environment->sample(rayDir);
+    return environment->sampleScaled(rayDir);
 }
