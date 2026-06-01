@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <random>
 #include "Material.h"
 #include "Color.h"
 #include "Texture.h"
@@ -44,6 +45,10 @@ public:
     bool  scatter(const Ray& incoming, const HitInfo& hit, Color& attenuation, Ray& scattered) const override;
 
 private:
+
+    mutable std::mt19937 _rng{std::random_device{}()};
+    mutable std::normal_distribution<float> _gauss{0.f, 1.f};
+
     // D — Distribución normal Trowbridge-Reitz GGX
     static float D_GGX(const glm::vec3& n, const glm::vec3& h, float alpha);
 

@@ -132,18 +132,41 @@ Color CookTorranceMaterial::evaluateDirect(const glm::vec3 &wi, const glm::vec3 
 bool CookTorranceMaterial::scatter(const Ray& incoming, const HitInfo& hit,
                                     Color& attenuation, Ray& scattered) const
 {
-    // Reflexión especular para la componente indirecta.
-    // Usamos reflexión especular pura ponderada por F0 y rugosidad.
-    glm::vec3 reflectDir = glm::reflect(incoming.direction(), hit.normal);
-    scattered = Ray(hit.p, reflectDir);
+    const float roughness  = glm::clamp(_roughnessTexture->sample(hit.uv).r, 0.f, 1.f);
+    const float metallic   = glm::clamp(_metallicTexture->sample(hit.uv).r,  0.f, 1.f);
+    const Color albedoBase = albedo(hit.uv);
+    const Color F0 = Color(0.04f) * (1.f - metallic) + albedoBase * metallic;
 
-    // Metales: reflexión coloreada por el albedo, atenuada por la rugosidad
-    // Dieléctricos: reflexión débil (4%), también atenuada por rugosidad
-    const float roughness = glm::clamp(_roughnessTexture->sample(hit.uv).r, 0.f, 1.f);
-    const float metallic  = glm::clamp(_metallicTexture->sample(hit.uv).r,  0.f, 1.f);
-    Color albedoBase = albedo(hit.uv);
-    Color F0 = Color(0.04f) * (1.f - metallic) + albedoBase * metallic;
-    attenuation = F0 * (1.f - roughness);
+    // Rayo especular (determinista)
+    const glm::vec3 reflectDir = glm::reflect(incoming.direction(), hit.normal);
+
+    // Rayo difuso Lambertiano: normal + vector unitario aleatorio
+    const glm::vec3 randomUnit = glm::normalize(glm::vec3(_gauss(_rng), _gauss(_rng), _gauss(_rng)));
+    const glm::vec3 lambertDir = (glm::length(hit.normal + randomUnit) < 1e-4f)
+                             ? hit.normal
+                             : glm::normalize(hit.normal + randomUnit);
+
+    // Escogemos rayo especular o difuso de forma estocástica basada en el término de Fresnel para simular la mezcla entre ambos
+    glm::vec3 v = -glm::normalize(incoming.direction());
+    Color F = F_Schlick(hit.normal, v, F0);
+
+    // Probabilidad de especular (basada en el promedio RGB del término de Fresnel)
+    // Se limita a [0.05, 0.95] para evitar dividir por 0 en casos extremos.
+    float probSpecular = glm::clamp((F.r + F.g + F.b) / 3.0f, 0.05f, 0.95f);
+    float probDiffuse = 1.0f - probSpecular;
+
+    std::uniform_real_distribution<float> dist(0.f, 1.f);
+    if (dist(_rng) < probSpecular) {
+        // Tomar el camino especular puro
+        scattered = Ray(hit.p, reflectDir);
+        // Compensamos la atenuación dividiendo por la probabilidad para conservar energía
+        attenuation = F / probSpecular;
+    } else {
+        // Tomar el camino difuso puro
+        scattered = Ray(hit.p, lambertDir);
+        Color kd = (Color(1.f) - F) * (1.f - metallic);
+        attenuation = (kd * albedoBase) / probDiffuse;
+    }
 
     return (attenuation.r + attenuation.g + attenuation.b) > EPSILON;
 }
