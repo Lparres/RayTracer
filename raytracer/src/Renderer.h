@@ -13,7 +13,7 @@
 
 class Renderer {
     static constexpr int maxDepth = 3;
-    static constexpr int samples = 10;
+    static constexpr int samples = 500;
     static constexpr float samplesInv = 1.f / samples;
     const Color backgroundColor = BLACK;
 
