@@ -64,6 +64,8 @@ private:
 
     // VNDF - Eric Heitz (sampleo GGX de las normales visibles)
     static glm::vec3 VNDF_GGX(const glm::vec3& woLocal, float alpha, float U1, float U2);
+    
+    static glm::vec3 sampleWeightedCosine(float u1, float u2);
 
     std::shared_ptr<Texture> _albedoTexture = nullptr;
     std::shared_ptr<Texture> _roughnessTexture = nullptr;

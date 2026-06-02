@@ -125,14 +125,22 @@ glm::vec3 CookTorranceMaterial::VNDF_GGX(const glm::vec3& woLocal, float alpha, 
     return Ne;
 }
 
+glm::vec3 CookTorranceMaterial::sampleWeightedCosine(float u1, float u2) {
+    float r   = glm::sqrt(u1);
+    float phi = 2.f * PI * u2;
+    float x = r * std::cos(phi);
+    float y = r * std::sin(phi);
+    float z = glm::sqrt(1.f - x*x - y*y);
+    return glm::vec3(x,y,z);
+}
 
 // ─── BRDF completa ────────────────────────────────────────────────────────────
 
 Color CookTorranceMaterial::evaluateDirect(const glm::vec3 &wi, const glm::vec3 &wo,
                                            const HitInfo &hit) const
 {
-    const float roughness = glm::clamp(_roughnessTexture->sample(hit.uv).r, 0.f, 1.f);
-    const float metallic  = glm::clamp(_metallicTexture->sample(hit.uv).r,  0.f, 1.f);
+    const float roughness = glm::clamp(_roughnessTexture->sample(hit.uv).g, 0.f, 1.f);
+    const float metallic  = glm::clamp(_metallicTexture->sample(hit.uv).b,  0.f, 1.f);
     Color albedoBase = albedo(hit.uv);
 
     const glm::vec3& n = hit.normal;
@@ -170,8 +178,8 @@ Color CookTorranceMaterial::evaluateDirect(const glm::vec3 &wi, const glm::vec3 
 bool CookTorranceMaterial::scatter(const Ray& incoming, const HitInfo& hit,
                                     Color& attenuation, Ray& scattered) const
 {
-    const float roughness  = glm::clamp(_roughnessTexture->sample(hit.uv).r, 0.f, 1.f);
-    const float metallic   = glm::clamp(_metallicTexture->sample(hit.uv).r,  0.f, 1.f);
+    const float roughness  = glm::clamp(_roughnessTexture->sample(hit.uv).g, 0.f, 1.f);
+    const float metallic   = glm::clamp(_metallicTexture->sample(hit.uv).b,  0.f, 1.f);
     const Color albedoBase = albedo(hit.uv);
     const Color F0 = Color(0.04f) * (1.f - metallic) + albedoBase * metallic;
 
@@ -180,10 +188,10 @@ bool CookTorranceMaterial::scatter(const Ray& incoming, const HitInfo& hit,
     const glm::vec3 wo = -glm::normalize(incoming.direction());
     const glm::vec3 woLocal = basis.worldToLocal(wo);
 
-    const float alpha = roughness * roughness;
+    const float alpha = std::max(0.001f, roughness * roughness);
     std::uniform_real_distribution<float> dist(0.f, 1.f);
-    const float U1 = dist(_rng);
-    const float U2 = dist(_rng);
+    float U1 = dist(_rng);
+    float U2 = dist(_rng);
     
     glm::vec3 mLocal = VNDF_GGX(woLocal, alpha, U1, U2); 
     const glm::vec3 m = glm::normalize(basis.localToWorld(mLocal)); // normal de la microfaceta
@@ -206,14 +214,13 @@ bool CookTorranceMaterial::scatter(const Ray& incoming, const HitInfo& hit,
         scattered = Ray(hit.p, reflectDir);
         attenuation = (F * G1wi) / probSpecular;
     } else {
-        // Rayo difuso Lambertiano: normal + vector unitario aleatorio
-        const glm::vec3 randomUnit = glm::normalize(glm::vec3(_gauss(_rng), _gauss(_rng), _gauss(_rng)));
-        const glm::vec3 lambertDir = (glm::length(hit.normal + randomUnit) < 1e-4f)
-                                ? hit.normal
-                                : glm::normalize(hit.normal + randomUnit);
-                                
+        // Rayo difuso Lambertiano: cosine weighted sampling
+        U1 = dist(_rng);
+        U2 = dist(_rng);
+        const glm::vec3 diffuseDir = glm::normalize(basis.localToWorld(sampleWeightedCosine(U1, U2)));
+
         // Tomar el camino difuso puro
-        scattered = Ray(hit.p, lambertDir);
+        scattered = Ray(hit.p, diffuseDir);
         Color kd = (Color(1.f) - F) * (1.f - metallic);
         attenuation = (kd * albedoBase) / probDiffuse;
     }
