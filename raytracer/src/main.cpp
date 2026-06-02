@@ -14,11 +14,9 @@ int main(void)
 {
 
     std::vector<std::shared_ptr<DemoScene>> demos;
-    demos.push_back(std::make_shared<Demo2>());
-    demos.push_back(std::make_shared<Demo3>());
     demos.push_back(std::make_shared<Demo4>());
-    demos.push_back(std::make_shared<Demo5>());
     demos.push_back(std::make_shared<Demo6>());
+    demos.push_back(std::make_shared<Demo5>());
     demos.push_back(std::make_shared<Demo1>());
 
     for(auto demo : demos) {
@@ -83,7 +81,7 @@ int main(void)
         const auto writeEnd = std::chrono::steady_clock::now();
         const std::chrono::duration<double> writeElapsed = writeEnd - writeStart;
         std::cout << std::fixed << std::setprecision(2)
-                  << "Tiempo de exportacion PPM: " << writeElapsed.count() << " s\n";
+                  << "Tiempo de exportacion PPM: " << writeElapsed.count() << " s\n\n";
 
     }
 

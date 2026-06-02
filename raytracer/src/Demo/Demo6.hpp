@@ -15,7 +15,7 @@ private:
 
     std::shared_ptr<Material> gold;
     std::shared_ptr<Material> chrome;
-    std::shared_ptr<Material> redPlastic;
+    std::shared_ptr<Material> glossy;
 
 
 public:
@@ -45,7 +45,7 @@ public:
 
         chrome = std::make_shared<CookTorranceMaterial>(Color(0.95f,0.95f,0.95f), 0.02f, 1.0f);
 
-        redPlastic = std::make_shared<CookTorranceMaterial>(Color(0.8f,0.05f,0.05f),0.3f,0.0f);
+        glossy = std::make_shared<CookTorranceMaterial>(Color(0.43f,0.36f,0.758f), 0.001f, 0.0f);
     }
 
     void loadScene() override
@@ -72,7 +72,7 @@ public:
             std::make_shared<Sphere>(
                 glm::vec3(3.5f,0.0f,-6.0f),
                 1.5f,
-                redPlastic
+                glossy
             )
         );
 
